@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoxelCraft App Center - Auto Scanner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: rgba(22, 27, 34, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #30363d;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: #58a6ff;
+        }
+
+        .repo-tag {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            width: 100%;
+            flex: 1;
+        }
+
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 16px;
+        }
+
+        .status-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-refresh {
+            background: rgba(88, 166, 255, 0.15);
+            color: #58a6ff;
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-refresh:hover {
+            background: rgba(88, 166, 255, 0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #58a6ff;
+        }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            background: rgba(88, 166, 255, 0.15);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .card-desc {
+            font-size: 13px;
+            color: #8b949e;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .card-path {
+            font-size: 11px;
+            color: #8b949e;
+            font-family: monospace;
+            background: rgba(13, 17, 23, 0.8);
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: fit-content;
+        }
+
+        .btn-launch {
+            background: #1f6feb;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: background 0.2s;
+            margin-top: auto;
+        }
+
+        .btn-launch:hover {
+            background: #388bfd;
+        }
+
+        .loading-box {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #8b949e;
+            font-size: 16px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(88, 166, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #58a6ff;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">🚀 App<span>Center</span></div>
+        <div class="repo-tag">
+            📁 lszxpro/VoxelCraft-public
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="header-status">
+            <div class="status-title">
+                ⚡ Aplicações Encontradas
+            </div>
+            <button class="btn-refresh" onclick="scanRepository()">🔄 Recarregar Repositório</button>
+        </div>
+
+        <div class="grid" id="appsGrid">
+            <div class="loading-box">
+                <div class="spinner"></div>
+                <p>Escaneando repositório do GitHub...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const REPO_OWNER = 'lszxpro';
+        const REPO_NAME = 'VoxelCraft-public';
+        const BASE_PAGES_URL = `https://${REPO_OWNER}.github.io/${REPO_NAME}/`;
+        const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/trees/main?recursive=1`;
+
+        // Mapeamento específico dos seus apps
+        const knownApps = {
+            'voxelgame/index.html': {
+                title: 'VoxelCraft 3D',
+                icon: '🧊',
+                desc: 'Jogo e construtor voxel 3D em HTML/JS com Three.js.'
+            },
+            'ailauncher/index.html': {
+                title: 'Universal AI Client',
+                icon: '⚡',
+                desc: 'Cliente de inteligência artificial com suporte a perfis, imagens e arquivos.'
+            },
+            'modflix/index.html': {
+                title: 'ModFlix',
+                icon: '🎬',
+                desc: 'Navegador e explorador de mods e conteúdos via Modrinth API.'
+            }
+        };
+
+        window.onload = () => {
+            scanRepository();
+        };
+
+        function resolveAppDetails(path) {
+            const cleanPath = path.toLowerCase();
+            
+            // Verifica se é um dos caminhos conhecidos
+            if (knownApps[cleanPath]) {
+                return knownApps[cleanPath];
+            }
+
+            // Fallback dinâmico para arquivos/pastas novos
+            let name = path.split('/').pop().replace('.html', '');
+            if (name.toLowerCase() === 'index') {
+                const parts = path.split('/');
+                name = parts.length > 1 ? parts[parts.length - 2] : 'Home';
+            }
+
+            let icon = '📄';
+            if (cleanPath.includes('voxel') || cleanPath.includes('game')) icon = '🧊';
+            else if (cleanPath.includes('ai') || cleanPath.includes('chat')) icon = '⚡';
+            else if (cleanPath.includes('mod')) icon = '🎬';
+
+            return {
+                title: name.replace(/[-_]/g, ' ').toUpperCase(),
+                icon: icon,
+                desc: 'Aplicação no repositório VoxelCraft.'
+            };
+        }
+
+        async function scanRepository() {
+            const grid = document.getElementById('appsGrid');
+            grid.innerHTML = `
+                <div class="loading-box">
+                    <div class="spinner"></div>
+                    <p>Conectando ao GitHub e buscando arquivos HTML...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+
+                if (!data.tree) {
+                    grid.innerHTML = `<div class="loading-box">Não foi possível ler o repositório ou o limite da API do GitHub foi atingido.</div>`;
+                    return;
+                }
+
+                // Ignora o próprio index.html da raiz do AppCenter
+                const htmlFiles = data.tree.filter(item => 
+                    item.type === 'blob' && 
+                    item.path.endsWith('.html') && 
+                    item.path.toLowerCase() !== 'index.html'
+                );
+
+                if (htmlFiles.length === 0) {
+                    grid.innerHTML = `<div class="loading-box">Nenhum app HTML secundário encontrado na branch main.</div>`;
+                    return;
+                }
+
+                grid.innerHTML = '';
+
+                htmlFiles.forEach(file => {
+                    const details = resolveAppDetails(file.path);
+                    const fullUrl = BASE_PAGES_URL + file.path;
+
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div class="card-icon">${details.icon}</div>
+                            <span class="card-path">/${file.path}</span>
+                        </div>
+                        <div class="card-title">${details.title}</div>
+                        <div class="card-desc">${details.desc}</div>
+                        <a href="${fullUrl}" target="_blank" class="btn-launch">Abrir Aplicação ↗</a>
+                    `;
+                    grid.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error(error);
+                grid.innerHTML = `<div class="loading-box">Erro de conexão ao buscar os arquivos do GitHub.</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
