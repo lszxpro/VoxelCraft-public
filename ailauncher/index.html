@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal AI Client - Fixed CORS Proxy</title>
+    <title>Universal AI Client - Robust Fetch</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -1066,6 +1066,31 @@
             }
         });
 
+        // Função de envio com tentativas e fallback inteligente
+        async function fetchWithFallback(url, options) {
+            // Tentativa 1: Requisição direta
+            try {
+                const response = await fetch(url, options);
+                if (response.ok) return response;
+            } catch (e) {
+                console.warn('Conexão direta falhou, tentando via proxy...');
+            }
+
+            // Tentativa 2: Proxy Allorigins
+            try {
+                const targetUrl = encodeURIComponent(url);
+                const proxyUrl = `https://api.allorigins.win/raw?url=${targetUrl}`;
+                const proxyResponse = await fetch(proxyUrl, options);
+                return proxyResponse;
+            } catch (e) {
+                console.warn('Proxy 1 falhou, tentando proxy de backup...');
+            }
+
+            // Tentativa 3: Proxy de reserva
+            const targetUrl = encodeURIComponent(url);
+            return await fetch(`https://thingproxy.freeboard.io/fetch/${url}`, options);
+        }
+
         async function sendMessage() {
             const currentProfile = profiles.find(p => p.id === activeProfileId);
             let text = userInput.value.trim();
@@ -1160,11 +1185,9 @@
                         });
                     }
 
-                    // Utilização de Proxy CORS Gratuito (corsproxy.org) sem necessidade de API Key
                     const targetUrl = `${baseUrl}/chat/completions`;
-                    const proxyUrl = `https://corsproxy.org/?${encodeURIComponent(targetUrl)}`;
 
-                    const res = await fetch(proxyUrl, {
+                    const res = await fetchWithFallback(targetUrl, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${key}`,
