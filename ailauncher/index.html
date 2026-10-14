@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal AI Client - Custom & Fixed API</title>
+    <title>Universal AI Client - Home</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -1160,8 +1160,11 @@
                         });
                     }
 
-                    // Requisição limpa sem cabeçalhos que quebram CORS
-                    const res = await fetch(`${baseUrl}/chat/completions`, {
+                    // Utilização de Proxy CORS para evitar o erro "Failed to fetch" no GitHub Pages
+                    const targetUrl = `${baseUrl}/chat/completions`;
+                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+
+                    const res = await fetch(proxyUrl, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${key}`,
@@ -1173,7 +1176,6 @@
                         })
                     });
 
-                    // Captura e exibe o erro exato que a API enviou (se o modelo não existir, etc)
                     if (!res.ok) {
                         let errDetail = '';
                         try {
@@ -1211,7 +1213,6 @@
 
             } catch (err) {
                 console.error(err);
-                // Agora o erro exato aparece no balão de chat
                 botMsgObj.bubble.innerHTML = `<span style="color: #f85149; font-weight: bold;">Falha na Conexão:</span><br>${err.message}`;
             }
 
