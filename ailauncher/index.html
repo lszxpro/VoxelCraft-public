@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal AI Client - Home</title>
+    <title>Universal AI Client - Fixed CORS Proxy</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -1160,9 +1160,9 @@
                         });
                     }
 
-                    // Utilização de Proxy CORS para evitar o erro "Failed to fetch" no GitHub Pages
+                    // Utilização de Proxy CORS Gratuito (corsproxy.org) sem necessidade de API Key
                     const targetUrl = `${baseUrl}/chat/completions`;
-                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+                    const proxyUrl = `https://corsproxy.org/?${encodeURIComponent(targetUrl)}`;
 
                     const res = await fetch(proxyUrl, {
                         method: 'POST',
