@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal AI Client - Delete & Manage Models</title>
+    <title>Universal AI Client - Custom & Fixed API</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -1131,6 +1131,12 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ contents: [{ parts }] })
                     });
+                    
+                    if (!res.ok) {
+                        const errText = await res.text();
+                        throw new Error(`Erro Gemini HTTP ${res.status}: ${errText}`);
+                    }
+                    
                     const data = await res.json();
                     if (data.candidates && data.candidates[0].content.parts[0].text) {
                         responseText = data.candidates[0].content.parts[0].text;
@@ -1142,7 +1148,6 @@
                     let formattedContent;
                     const imageFiles = currentFiles.filter(f => f.type === 'image');
 
-                    // Se não houver imagens, envia texto puro (requisitado por várias APIs como a xKiro)
                     if (imageFiles.length === 0) {
                         formattedContent = fullPromptText;
                     } else {
@@ -1155,6 +1160,7 @@
                         });
                     }
 
+                    // Requisição limpa sem cabeçalhos que quebram CORS
                     const res = await fetch(`${baseUrl}/chat/completions`, {
                         method: 'POST',
                         headers: {
@@ -1166,6 +1172,18 @@
                             messages: [{ role: 'user', content: formattedContent }]
                         })
                     });
+
+                    // Captura e exibe o erro exato que a API enviou (se o modelo não existir, etc)
+                    if (!res.ok) {
+                        let errDetail = '';
+                        try {
+                            const errJson = await res.clone().json();
+                            errDetail = errJson.error?.message || JSON.stringify(errJson);
+                        } catch(e) {
+                            errDetail = await res.text();
+                        }
+                        throw new Error(`[Erro HTTP ${res.status}] ${errDetail}`);
+                    }
 
                     const data = await res.json();
                     if (data.choices && data.choices[0].message.content) {
@@ -1193,7 +1211,8 @@
 
             } catch (err) {
                 console.error(err);
-                botMsgObj.bubble.innerText = 'Erro ao se conectar com o servidor da API.';
+                // Agora o erro exato aparece no balão de chat
+                botMsgObj.bubble.innerHTML = `<span style="color: #f85149; font-weight: bold;">Falha na Conexão:</span><br>${err.message}`;
             }
 
             sendBtn.disabled = false;
