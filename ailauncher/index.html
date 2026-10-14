@@ -533,7 +533,7 @@
 
         <div class="config-group" id="baseUrlGroup">
             <label for="baseUrl">Base URL da API</label>
-            <input type="text" id="baseUrl" value="https://openrouter.ai/api/v1">
+            <input type="text" id="baseUrl" value="https://api.xkiro.com/v1">
         </div>
 
         <div class="config-group">
@@ -909,7 +909,7 @@
         const defaultProfiles = [
             {
                 id: "p_default",
-                name: "OpenRouter / xKiro",
+                name: "xKiro / OpenRouter",
                 provider: "openrouter",
                 baseUrl: "https://api.xkiro.com/v1",
                 key: "",
@@ -1139,28 +1139,34 @@
                         responseText = `Erro Gemini: ${data.error.message}`;
                     }
                 } else {
-                    let contentArray = [{ type: 'text', text: fullPromptText }];
-                    currentFiles.filter(f => f.type === 'image').forEach(img => {
-                        contentArray.push({
-                            type: 'image_url',
-                            image_url: { url: `data:${img.mimeType};base64,${img.base64}` }
-                        });
-                    });
+                    let formattedContent;
+                    const imageFiles = currentFiles.filter(f => f.type === 'image');
 
-                    // Inclusão dos cabeçalhos requeridos para requisições do browser
+                    // Se não houver imagens, envia texto puro (requisitado por várias APIs como a xKiro)
+                    if (imageFiles.length === 0) {
+                        formattedContent = fullPromptText;
+                    } else {
+                        formattedContent = [{ type: 'text', text: fullPromptText }];
+                        imageFiles.forEach(img => {
+                            formattedContent.push({
+                                type: 'image_url',
+                                image_url: { url: `data:${img.mimeType};base64,${img.base64}` }
+                            });
+                        });
+                    }
+
                     const res = await fetch(`${baseUrl}/chat/completions`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${key}`,
-                            'Content-Type': 'application/json',
-                            'HTTP-Referer': window.location.href,
-                            'X-Title': 'Universal AI Client'
+                            'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
                             model: model,
-                            messages: [{ role: 'user', content: contentArray }]
+                            messages: [{ role: 'user', content: formattedContent }]
                         })
                     });
+
                     const data = await res.json();
                     if (data.choices && data.choices[0].message.content) {
                         responseText = data.choices[0].message.content;
