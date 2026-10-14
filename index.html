@@ -186,74 +186,21 @@ button{font:inherit;font-size:15px;padding:10px 18px;background:#4a7a30;color:#f
 @media(max-height:500px) and (min-width:701px){#df .sw-tabs{min-height:54px}#df .sw-tab{font-size:20px;padding:10px 3px}#df .sw-content{padding:18px 16px}#df .sw-name{margin-bottom:17px}#df .sw-label{font-size:14px;margin-bottom:8px}#df #wnm{font-size:15px;padding:8px}#df .sw-modes{max-width:790px}#df .sw-mode-title{font-size:16px;margin-bottom:4px}#df .sw-card-label{font-size:13px}#df .sw-controls{margin-top:19px;max-width:680px}#df .sw-controls button{font-size:12px;padding:9px 3px}#df .sw-actions{padding:13px 16px}#df .sw-actions button{font-size:14px;padding:9px 4px}}
 
 </style>
-<style>
-/* Local worlds and PeerJS guest rooms share the existing Play screen. */
-#wm .mp-tabs{display:flex;gap:8px;padding:12px 0 16px;position:sticky;top:0;background:#172128;z-index:1}
-#wm .mp-tabs button{flex:1;min-height:44px;background:#303942;border:2px solid #606971;color:#e9e7e0;box-shadow:inset 0 2px #7a8389,inset 0 -3px #182027}
-#wm .mp-tabs button[aria-selected=true]{background:#4b535d;border-color:#e4dfcc;box-shadow:inset 0 -3px #c9b688}
-#mp-worlds[hidden],#mp-servers[hidden]{display:none!important}
-#mp-worlds{display:flex;flex-direction:column;gap:12px}#mp-servers{display:flex;flex-direction:column;gap:14px}
-.mp-box{padding:14px;background:#1e272e;border:2px solid #4d5962;box-shadow:inset 0 2px #657078;box-sizing:border-box;color:#e7e4dc}
-.mp-box h3{margin:0 0 10px;font-size:17px}.mp-box p,.mp-small{font-size:12px;line-height:1.5;color:#c4c9c9;margin:6px 0}
-.mp-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.mp-row input{flex:1;min-width:100px;width:100%;box-sizing:border-box;min-height:42px;background:#111a20;color:#eee;border:1px solid #869198;padding:8px 10px;font:inherit;font-size:14px}
-.mp-row button{min-height:42px}.mp-row label{width:100%;font-size:13px}.mp-lobby{display:flex;gap:10px;align-items:center;padding:10px;background:#28343d;border:1px solid #54606a;flex-wrap:wrap}
-.mp-lobby .mp-title{flex:1;min-width:120px;overflow-wrap:anywhere}.mp-lobby small{display:block;color:#c2c8c8;font-size:11px;margin-top:4px}
-#mp-status{min-height:20px;line-height:1.45;font-size:13px;overflow-wrap:anywhere;color:#ded7bf}#mp-status[data-error=true]{color:#ffb6ac}
-#mp-modal{display:none;position:fixed;inset:0;z-index:30;background:#080d13c9;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;backdrop-filter:blur(5px)}
-#mp-modal .mp-dialog{position:relative;background:#202b34;border:3px solid #65717b;box-shadow:inset 0 2px #9ba2a7,0 8px 0 #090d12;max-width:460px;width:100%;padding:24px;box-sizing:border-box;max-height:90dvh;overflow-y:auto;text-align:center}
-#mp-modal h2{font-size:21px;margin:12px 0 16px;color:#efebe1}#mp-modal p{font-size:13px;line-height:1.55;color:#d0d4d2}
-#mp-modal .mp-x{position:absolute;right:8px;top:8px;width:34px;height:34px;padding:0;background:#45505a;color:white;border:2px solid #929a9f;font-size:20px}
-#mp-code{display:block;font-family:monospace;font-size:34px;letter-spacing:5px;margin:16px 0;padding:14px;background:#10181f;border:2px solid #b3b2a5;color:#f4eaca;user-select:text}
-#mp-link{width:100%;box-sizing:border-box;background:#111a21;color:#eee;border:1px solid #7d898f;padding:9px;font-size:12px;user-select:text}
-#mp-modal button:not(.mp-x){margin-top:10px;min-height:40px}#mp-modal .mp-danger{background:#90392f;border-color:#c76755}
-#mp-host{max-width:260px}#mp-people{overflow-wrap:anywhere;font-size:12px;line-height:1.5;color:#d4d7d4}
-@media(max-width:540px){#wm .bd{padding-left:12px;padding-right:12px}.mp-box{padding:10px}.mp-row button{flex:1}.mp-lobby button{padding:8px}.mp-dialog{padding:18px!important}#mp-code{font-size:29px}}
 
-</style>
-<style>
-/* Compact chat HUD, anchored below the existing Settings icon. */
-#mp-chat-button[hidden],#mp-chat-overlay[hidden],#mp-chat-notices[hidden],#mp-chat-badge[hidden],#mp-chat-empty[hidden]{display:none!important}
-#mp-chat-button{position:fixed;left:8px;top:calc(env(safe-area-inset-top,0px) + 48px);width:43px;height:35px;z-index:4;padding:5px 9px;opacity:.88;display:flex;align-items:center;justify-content:center;background:#293c2dd9;border:2px solid #8baf77;border-radius:6px;color:#f4f1e8;touch-action:manipulation}
-#mp-chat-button:hover,#mp-chat-button[aria-expanded=true]{opacity:1;background:#426548}#mp-chat-button svg{width:23px;height:22px;pointer-events:none}
-#mp-chat-badge{position:absolute;right:-6px;top:-6px;min-width:15px;height:16px;padding:0 3px;box-sizing:border-box;border:1px solid #d9d3bb;background:#843d2e;color:#fff;font:700 10px/14px Arial;border-radius:3px}
-.controls-hidden #mp-chat-button{z-index:14}.stone-world-open #mp-chat-button,.stone-world-open #mp-chat-overlay,.stone-world-open #mp-chat-notices{visibility:hidden!important}
-#mp-chat-overlay{position:fixed;z-index:24;left:8px;top:calc(env(safe-area-inset-top,0px) + 91px);width:min(440px,calc(100vw - 16px));max-height:calc(100dvh - env(safe-area-inset-top,0px) - 110px);box-sizing:border-box;display:flex;flex-direction:column;background:rgba(17,25,32,.91);border:2px solid #74827e;box-shadow:inset 0 2px #96a29a,0 4px 0 #080e15a8;color:#eeeee6;border-radius:3px;overflow:hidden;touch-action:pan-y}
-#mp-chat-overlay header{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;gap:8px;background:#24322bcc;border-bottom:1px solid #596960}
-#mp-chat-overlay header strong{font:700 13px var(--mc);letter-spacing:.3px}#mp-chat-close{width:32px;height:30px;min-height:0;padding:0;font-size:21px;border-radius:3px;background:#39553e;color:white;border:1px solid #96ac8e}
-#mp-chat-history{height:min(220px,34dvh);min-height:24px;overflow-y:auto;overscroll-behavior:contain;padding:8px 10px;box-sizing:border-box;font:14px/1.5 Consolas,monospace;user-select:text;-webkit-user-select:text;touch-action:pan-y;overflow-wrap:anywhere}
-.mp-chat-message{padding:4px 0;white-space:pre-wrap;border-bottom:1px solid #7e8a831a}.mp-chat-message:last-child{border-bottom:none}
-#mp-chat-empty{font:12px/1.5 Arial;color:#b7c5ba;padding:0 10px;margin:4px 0 8px}#mp-chat-form{display:flex;gap:7px;padding:8px 10px;margin:0;border-top:1px solid #54675c}
-#mp-chat-input{flex:1;min-width:0;min-height:40px;box-sizing:border-box;border:1px solid #819584;background:#101c20d9;color:#fff;padding:7px 8px;font:16px Arial;user-select:text;-webkit-user-select:text;touch-action:manipulation;border-radius:2px}
-#mp-chat-send{padding:7px 10px;min-width:64px;min-height:40px;border-radius:3px;font-size:13px}#mp-chat-status{margin:0;padding:0 10px 7px;font:11px/1.4 Arial;color:#e7c8a0;min-height:12px}
-#mp-chat-notices{position:fixed;z-index:4;left:8px;top:calc(env(safe-area-inset-top,0px) + 92px);width:min(430px,calc(100vw - 72px));display:flex;flex-direction:column;gap:5px;pointer-events:none;box-sizing:border-box}
-.mp-chat-toast{background:rgba(9,18,22,.75);padding:7px 10px;color:#f4f4e9;border-left:3px solid #8ead77;font:13px/1.5 Consolas,monospace;text-shadow:1px 1px #000;overflow-wrap:anywhere;animation:mp-chat-fade 5.5s linear forwards}
-@keyframes mp-chat-fade{0%,78%{opacity:1}100%{opacity:0}}
-@media(max-height:430px){#mp-chat-overlay{top:calc(env(safe-area-inset-top,0px) + 8px);left:58px;width:min(440px,calc(100vw - 66px));max-height:calc(100dvh - 18px)}#mp-chat-history{height:clamp(55px,26dvh,110px)}#mp-chat-overlay header{padding:5px 8px}#mp-chat-form{padding:5px 8px}}
 
-</style>
-<style>#mp-relay summary{cursor:pointer;padding:8px;font-size:13px}#mp-relay textarea{box-sizing:border-box;width:100%;background:#151d24;color:#eee;border:1px solid #89939c;padding:8px;font:13px monospace}#mp-relay input[type=checkbox]{width:auto}#mp-turn-status{overflow-wrap:anywhere}</style></head><body>
+</head><body>
 <canvas id="c"></canvas><div id="tz"></div><div class="o" id="cr"></div><div class="o" id="bar"><i id="bi"></i></div><div class="o" id="st"></div><div class="o" id="tm" style="text-align:right"><span id="tmc"></span><br><span id="fpv"></span></div><div class="o" id="hurt"></div><div class="o" id="vig" style="left:0;top:0;right:0;bottom:0;opacity:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.5) 100%)"></div><div id="hb"></div><div class="s" id="mi" style="position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 6px);left:calc(50% + min(190px,38vw) + 6px);cursor:pointer">⋯</div><div class="qk" id="qb" title="Q: toque = dropa 1 · segure = dropa a pilha"><b>Q</b><i></i></div><div id="jb"><div id="jk"></div></div>
 <div id="bt"><div class="b" id="bp">🧱<small style="font-size:13px;margin-left:2px">/🍖</small></div><div class="b" id="bj">⬆</div><div class="b" id="bd" style="display:none">⬇</div></div>
-<button id="fs">⛶</button><button id="gear" style="position:fixed;left:8px;top:calc(env(safe-area-inset-top,0px) + 8px);padding:4px 10px;opacity:.7">⚙</button><button id="mp-chat-button" type="button" hidden title="Chat multiplayer" aria-label="Abrir chat multiplayer" aria-controls="mp-chat-overlay" aria-expanded="false"><svg viewBox="0 0 24 22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 2h18v13H10l-6 5v-5H3z"/><path d="M6 6h12M6 10h9"/></svg><span id="mp-chat-badge" hidden></span></button>
-<section id="mp-chat-overlay" role="dialog" aria-labelledby="mp-chat-title" hidden><header><strong id="mp-chat-title">CHAT MULTIPLAYER</strong><button id="mp-chat-close" type="button" title="Fechar chat (Esc)" aria-label="Fechar chat">✕</button></header><div id="mp-chat-history" role="log" aria-label="Histórico de mensagens" aria-live="polite" aria-relevant="additions" tabindex="0"></div><p id="mp-chat-empty">Converse com os jogadores desta sala.</p><form id="mp-chat-form"><input id="mp-chat-input" type="text" maxlength="480" placeholder="Digite uma mensagem…" aria-label="Mensagem de chat" autocomplete="off" enterkeyhint="send"><button id="mp-chat-send" type="submit">Enviar</button></form><p id="mp-chat-status" role="status" aria-live="polite"></p></section>
-<div id="mp-chat-notices" aria-live="polite" aria-atomic="false" hidden></div>
+<button id="fs">⛶</button><button id="gear" style="position:fixed;left:8px;top:calc(env(safe-area-inset-top,0px) + 8px);padding:4px 10px;opacity:.7">⚙</button>
 <div class="ov" id="inv"><h1 style="font-size:28px">Inventário</h1><div id="eqr"></div><div id="ig"></div><button id="cb2">🛠 Crafts</button><button id="qi" class="qkb" title="Toque = dropa 1 · segure = dropa a pilha"><b>Q · Dropar</b><i></i></button><button id="ix">Fechar (E)</button></div>
 <div class="ov" id="dead"><h1 style="color:#e44">Você morreu</h1><button id="rs">Renascer</button></div>
 <div class="ov" id="menu"><div class="logo"><span>VoxelCraft</span><em>3D</em><div class="sp">Agora em 3D!</div></div>
 <button class="mb gr" id="mj">Jogar</button><button class="mb" id="mg">Opções</button><div style="display:flex;gap:8px;width:min(84vw,380px)"><button class="mb" id="mh" style="flex:1;width:auto;min-width:0">Como jogar</button><button class="mb" id="msk" title="Skins" aria-label="Skins" style="flex:none;width:clamp(40px,10vh,54px);padding:0"><canvas id="mskc" width="8" height="8" style="width:64%;height:64%;image-rendering:pixelated"></canvas></button></div>
 <div class="foot"><span>© D. Luan</span><span>v1.0</span></div></div>
-<div id="wm"><div class="hd"><button id="wb" aria-label="Voltar">‹</button><b>JOGAR</b></div><div class="bd">
-<div class="mp-tabs" role="tablist" aria-label="Jogar"><button id="mp-tab-worlds" role="tab" aria-selected="true" aria-controls="mp-worlds">Mundos (<span id="wn">1</span>)</button><button id="mp-tab-servers" role="tab" aria-selected="false" aria-controls="mp-servers" tabindex="-1">Multiplayer / Servidores</button></div>
-<section id="mp-worlds" role="tabpanel" aria-labelledby="mp-tab-worlds">
+<div id="wm"><div class="hd"><button id="wb">‹</button><b>JOGAR</b></div><div class="bd"><div class="tab"><s></s>Mundos (<span id="wn">1</span>)</div>
 <button class="mb gr" id="nw">Criar novo mundo</button>
 <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><button class="mb" id="bkx">💾 Exportar backup</button><button class="mb" id="bki">📂 Importar backup</button><input type="file" id="bkf" accept=".json,application/json" style="display:none"></div>
-<div id="wl" style="display:flex;flex-direction:column;gap:12px"></div></section>
-<section id="mp-servers" role="tabpanel" aria-labelledby="mp-tab-servers" hidden>
-<div class="mp-box"><h3>Conectar por Código / Link</h3><div class="mp-row"><label for="mp-name">Seu nome</label><input id="mp-name" maxlength="20" value="Jogador" autocomplete="nickname"><label for="mp-join-code">Código da sala ou link do mundo</label><input id="mp-join-code" maxlength="2048" placeholder="ABC234 ou https://…?sala=ABC234" autocomplete="off" autocapitalize="characters" spellcheck="false"><button id="mp-join">Entrar no Servidor</button><button id="mp-cancel" hidden>Cancelar</button></div><p id="mp-status" role="status" aria-live="polite">Entre em uma sala VoxelCraft usando o código do anfitrião.</p></div>
-<div class="mp-box" id="mp-session" hidden><h3>Lobby ativo</h3><p id="mp-session-name"></p><div class="mp-row"><button id="mp-session-info">Ver sessão</button><button id="mp-session-leave">Desconectar</button></div></div>
-<div class="mp-box"><h3>Servidores / Salas salvas</h3><div id="mp-server-list" style="display:flex;flex-direction:column;gap:8px"></div><p class="mp-small">O anfitrião precisa manter o mundo aberto. Salas conectadas ficam salvas neste navegador.</p></div>
-<div class="mp-box"><h3>Hospedar um mundo</h3><p>Abra um mundo em Mundos. Durante o jogo, entre nas Configurações / Pausa e escolha “Abrir para Convidados”.</p></div>
-</section></div></div>
+<div id="wl" style="display:flex;flex-direction:column;gap:12px"></div></div></div>
 <div class="pn" id="wed"><h2 id="wedn">Meu Mundo</h2><p>Apagar o mundo remove todo o progresso salvo e gera um terreno novo.</p><button class="mb rd" id="wdl">Apagar mundo</button><button class="mb" id="wcl">Voltar</button></div>
 <div class="pn" id="hp"><h2>Como jogar</h2><p>PC: clique para travar o mouse · WASD · Espaço pula · Shift agacha · Ctrl corre · Esq quebra/ataca · Dir coloca/come · 1-9 / roda do mouse · E inventário · Q solta o item (segure para soltar a pilha toda)<br><br>Mobile: joystick à esquerda, arraste à direita para olhar.<br><br>Colete madeira → crie tábuas → espada. Zumbis aparecem à noite!<br><br>Modo Criativo: ative ao criar o mundo ou com /creative no terminal. C abre o menu criativo e toque duplo no espaço liga o voo.<br><br>Câmera: alterne 1ª/3ª pessoa em Opções ⚙ ou com a tecla V.<br><br>Cama: crafte (3 tábuas + 3 gravetos), coloque no chão e clique nela. À noite, ela pula a noite até a manhã. Sempre que você usa a cama, ela vira seu ponto de renascimento.</p><button class="mb" id="hx">Voltar</button></div>
 <div class="ov" id="cp" style="z-index:7"><h1 style="font-size:24px">🛠 Crafts</h1><input id="cs" placeholder="🔍 Pesquisar item..." style="width:min(90vw,420px);padding:10px;font:inherit;font-size:16px;border:3px solid #fff;background:#222;color:#fff"><label><input type="checkbox" id="ca"> Mostrar também os que faltam recursos</label><div id="cl" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-height:50vh;overflow:auto;touch-action:pan-y"></div><button id="cc2">Voltar</button></div>
@@ -285,8 +232,7 @@ button{font:inherit;font-size:15px;padding:10px 18px;background:#4a7a30;color:#f
 <div id="ls"><div class="logo"><span>VoxelCraft</span><em>3D</em></div><div class="spin"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div><div id="lb"><i id="lf"></i></div><div id="lp" style="text-align:center;margin-top:10px">0%</div></div><div id="lt"></div></div>
 <div class="ov" id="cfg" style="z-index:7"><h1 style="font-size:26px">Configurações gráficas</h1><div id="qp" style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center"><button data-q="0">Baixo</button><button data-q="1">Médio</button><button data-q="2">Alto</button><button data-q="3">Ultra</button></div>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,165px),1fr));gap:10px 16px;align-items:start;text-align:center;width:min(94vw,760px)"><label>Distância de renderização (chunks): <b id="vrd"></b><br><input type="range" id="rrd" min="1" max="32"></label><label>Resolução máx.: <b id="vdp"></b>x<br><input type="range" id="rdp" min="0.5" max="3" step="0.25"></label><label>Campo de visão: <b id="vfo"></b><br><input type="range" id="rfo" min="60" max="110"></label>
-<label title="Oculta apenas os controles de toque; mantém hotbar, mão, equipamento, vida, fome e inventário visíveis"><input type="checkbox" id="chideHud"> Esconder Controles / Hide Controls</label><label><input type="checkbox" id="cautoSprint"> Auto-Sprint / Correr Automático</label><label><input type="checkbox" id="cautoJump"> Auto-Jump (Pulo automático)</label><label title="Simplifica os efeitos visuais sem mudar a distância de renderização"><input type="checkbox" id="cpotato"> Modo Batata (Potato Mode)</label><label><input type="checkbox" id="csh"> Sombras</label><label><input type="checkbox" id="csf"> Sombras suaves</label><label><input type="checkbox" id="cao"> Oclusão ambiente (AO)</label><label><input type="checkbox" id="ctm"> Cinemático (tone mapping)</label><label>Tamanho da interface (config/inventário): <b id="vui"></b>%<br><input type="range" id="rui" min="50" max="130" step="5"></label><label><input type="checkbox" id="cdyn"> Resolução dinâmica (ajusta sozinha p/ manter FPS)</label><label><input type="checkbox" id="cshd"> ✨ Shader realista (tudo no máximo)</label></div><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"><button id="ctp">📷 Câmera: 1ª pessoa</button><button id="gfb">Shaders e Texturas</button><button id="sti">Interface</button><button id="tmn">Terminal</button><button id="mp-host" style="display:none">Abrir para Convidados</button><button id="csx" title="Sair" aria-label="Sair" style="display:none;width:44px;height:44px;padding:0;align-items:center;justify-content:center;font-size:24px;line-height:1;background:#a3281f;border-color:#d65a4f;color:#fff">✕</button><button id="cx" title="Fechar configurações" aria-label="Fechar configurações" style="position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);left:50%;transform:translateX(-50%);width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1;color:#fff;z-index:2">✕</button></div></div>
-<div id="mp-modal" role="dialog" aria-modal="true" aria-labelledby="mp-modal-title"><div class="mp-dialog"><button id="mp-modal-close" class="mp-x" aria-label="Fechar">✕</button><h2 id="mp-modal-title">Multiplayer</h2><p id="mp-modal-text"></p><div id="mp-host-info" hidden><span class="mp-small">CÓDIGO DA SALA</span><strong id="mp-code"></strong><input id="mp-link" readonly aria-label="Link do mundo"><button id="mp-copy">Copiar Link do Mundo</button><p id="mp-people"></p><button id="mp-close-world" class="mp-danger">Fechar Mundo</button></div><button id="mp-return" hidden>Voltar aos meus mundos</button></div></div>
+<label title="Oculta apenas os controles de toque; mantém hotbar, mão, equipamento, vida, fome e inventário visíveis"><input type="checkbox" id="chideHud"> Esconder Controles / Hide Controls</label><label><input type="checkbox" id="cautoSprint"> Auto-Sprint / Correr Automático</label><label><input type="checkbox" id="cautoJump"> Auto-Jump (Pulo automático)</label><label title="Simplifica os efeitos visuais sem mudar a distância de renderização"><input type="checkbox" id="cpotato"> Modo Batata (Potato Mode)</label><label><input type="checkbox" id="csh"> Sombras</label><label><input type="checkbox" id="csf"> Sombras suaves</label><label><input type="checkbox" id="cao"> Oclusão ambiente (AO)</label><label><input type="checkbox" id="ctm"> Cinemático (tone mapping)</label><label>Tamanho da interface (config/inventário): <b id="vui"></b>%<br><input type="range" id="rui" min="50" max="130" step="5"></label><label><input type="checkbox" id="cdyn"> Resolução dinâmica (ajusta sozinha p/ manter FPS)</label><label><input type="checkbox" id="cshd"> ✨ Shader realista (tudo no máximo)</label></div><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"><button id="ctp">📷 Câmera: 1ª pessoa</button><button id="gfb">Shaders e Texturas</button><button id="sti">Interface</button><button id="tmn">Terminal</button><button id="csx" title="Sair" aria-label="Sair" style="display:none;width:44px;height:44px;padding:0;align-items:center;justify-content:center;font-size:24px;line-height:1;background:#a3281f;border-color:#d65a4f;color:#fff">✕</button><button id="cx" title="Fechar configurações" aria-label="Fechar configurações" style="position:absolute;top:calc(env(safe-area-inset-top,0px) + 10px);left:50%;transform:translateX(-50%);width:44px;height:44px;padding:0;display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1;color:#fff;z-index:2">✕</button></div></div>
 <script>
 const BOOT=(()=>{
  let done=false,failed=false;
@@ -311,7 +257,7 @@ const $=i=>document.getElementById(i),M=Math,rnd=M.random,cl=(v,a,b)=>M.max(a,M.
 const mob=/Android|iPhone|iPad|Mobi|Mobile/i.test(navigator.userAgent)||(navigator.maxTouchPoints>0&&matchMedia('(pointer:coarse)').matches);
 let WL=[],AW=null;try{WL=JSON.parse(localStorage.vcl||'[]');AW=localStorage.vca;if(!WL.length&&!localStorage.vcl){WL=[{id:'0',name:'Meu Mundo',df:1,seed:0,date:+(localStorage.vcd||Date.now())}];AW='0'}}catch(e){}
 let aw=WL.find(w=>w.id==AW)||WL[0]||{id:'tmp',df:1,seed:0},SK=aw.id=='0'?'vc3':'vc3_'+aw.id,SDX=aw.seed|0;let df=aw.df;
-let SEED=1337+SDX;const H=96,SEA=20,CD={},EDC={},EDS={},BD={};let DIM=0,RET=null,tmO=.12,pcool=0,ptT=0,trv=0;
+const H=96,SEA=20,SEED=1337+SDX,CD={},EDC={},EDS={},BD={};let DIM=0,RET=null,tmO=.12,pcool=0,ptT=0,trv=0;
 const DF=[{d:.5,z:3,h:.5},{d:1,z:5,h:1},{d:1.5,z:7,h:1.3},{d:2,z:10,h:1.7}];let RD=3,AO=0,CF={fov:75,autoJump:true,potato:false,hideHUD:false,autoSprint:false};
 let lk=null,lc;const gc=(x,z)=>{const a=x>>4,b=z>>4;if(lk&&lk[0]==a&&lk[1]==b)return lc;lk=[a,b];return lc=CD[a+','+b]},gb=(x,y,z)=>{if(y<0||y>=H)return 0;const c=gc(x,z);return c?c[((x&15)*16+(z&15))*H+y]:1},sb=(x,y,z,v)=>{const c=gc(x,z);if(c&&y>=0&&y<H)c[((x&15)*16+(z&15))*H+y]=v};
 function hs(x,y,z){let h=(x*374761393)^(y*668265263)^(z*1274126177)^SEED;h=M.imul(h^(h>>>13),1274126177);h^=h>>>16;return(h>>>0)/4294967295}
@@ -461,7 +407,7 @@ function* meshChunkTask(cx,cz){
   shD=1;CH[key]={a:mesh(opaque,MS,true),b:mesh(fluid,MW,false),faces,quads,vertices:(opaque.p.length+fluid.p.length)/3};
 }
 
-function setB(x,y,z,id){chB(x,y,z,id);sb(x,y,z,id);const cx=x>>4,cz=z>>4,k=cx+','+cz;const E=DIM?EDS:EDC;(E[k]=E[k]||{})[x+','+y+','+z]=id;bc(cx,cz);if((x&15)==0)bc(cx-1,cz);if((x&15)==15)bc(cx+1,cz);if((z&15)==0)bc(cx,cz-1);if((z&15)==15)bc(cx,cz+1);window.MULTIPLAYER?.blockChange(x,y,z,id);}
+function setB(x,y,z,id){chB(x,y,z,id);sb(x,y,z,id);const cx=x>>4,cz=z>>4,k=cx+','+cz;const E=DIM?EDS:EDC;(E[k]=E[k]||{})[x+','+y+','+z]=id;bc(cx,cz);if((x&15)==0)bc(cx-1,cz);if((x&15)==15)bc(cx+1,cz);if((z&15)==0)bc(cx,cz-1);if((z&15)==15)bc(cx,cz+1);}
 const bsm=(a,b,v)=>{const k=cl((v-a)/(b-a),0,1);return k*k*(3-2*k)};
 // biomas: 0 planície, 1 montanhas altas, 2 neve/tundra, 3 deserto, 4 pântano
 function biome(x,z){if(vn(x/300,12,z/300)>.74)return 1;const t=vn(x/220,31,z/220),m=vn(x/260,77,z/260);if(t<.3)return 2;if(t>.68&&m<.55)return 3;if(m>.68)return 4;return 0}
@@ -725,7 +671,7 @@ while(q.length&&n<60){const[a,b,c]=q.pop(),k=a+','+b+','+c;if(seen[k]||gb(a,b,c)
 function chkP(px,py,pz){for(let ax=0;ax<2;ax++)for(let u=-3;u<=3;u++)for(let v=-4;v<=4;v++)for(let w=-3;w<=3;w++){const at=(i,j)=>ax?[px+u,py+v+j,pz+w+i]:[px+u+i,py+v+j,pz+w];let ok=1;for(let i=-1;i<=2&&ok;i++)for(let j=-1;j<=3&&ok;j++){const e=i<0||i>1,f=j<0||j>2;if(e&&f)continue;const[x,y,z]=at(i,j),b=gb(x,y,z);if(e||f?b!=23:b!=0)ok=0}
 if(ok){for(let i=0;i<2;i++)for(let j=0;j<3;j++){const[x,y,z]=at(i,j);setB(x,y,z,24)}snd(700,.5,'sine',.1,2);return}}}
 function go(){trv=1;ptT=0;$('fx').style.opacity=1;setTimeout(()=>{if(!DIM){RET=[P.x,P.y,P.z];tmO=tm;pre(1,.5,51.3,1.5)}else{pre(0,RET?RET[0]:SPX,RET?RET[1]:60,RET?RET[2]:SPZ);tm=tmO}pcool=4;trv=0;$('fx').style.opacity=0},700)}
-function pre(d,x,y,z){DIM=d;ui();for(const k in CH){sc.remove(CH[k].a,CH[k].b);CH[k].a.geometry.dispose();CH[k].b.geometry.dispose();delete CH[k]}for(const k in CD)delete CD[k];MB.forEach(m=>sc.remove(m.g));MB.length=0;PR.forEach(p=>sc.remove(p.mesh));PR.length=0;lk=null;pcx=1e9;pend=1;const cx=M.floor(x/16),cz=M.floor(z/16);if(!window.MULTIPLAYER?.rebuilding)for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)genC(cx+i,cz+j);P.x=x;P.y=y;P.z=z;P.vy=0;P.fy=y;P.kx=P.kz=0;if(d)P.yaw=M.PI}
+function pre(d,x,y,z){DIM=d;ui();for(const k in CH){sc.remove(CH[k].a,CH[k].b);CH[k].a.geometry.dispose();CH[k].b.geometry.dispose();delete CH[k]}for(const k in CD)delete CD[k];MB.forEach(m=>sc.remove(m.g));MB.length=0;PR.forEach(p=>sc.remove(p.mesh));PR.length=0;lk=null;pcx=1e9;pend=1;const cx=M.floor(x/16),cz=M.floor(z/16);for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)genC(cx+i,cz+j);P.x=x;P.y=y;P.z=z;P.vy=0;P.fy=y;P.kx=P.kz=0;if(d)P.yaw=M.PI}
 function pX(dt){const F2=full(130);plt.intensity=F2?1.5:0;plt.position.set(P.x,P.y+1.5,P.z);
 if(F2)MB.slice().forEach(m=>{if(m.t!='bird'&&M.hypot(m.x-P.x,m.z-P.z)<3.5&&M.abs(m.y-P.y)<3){m.hp-=3*dt;m.fl=.15;if(m.hp<=0)kill(m)}});
 if(DIM&&P.y<-25){hurt(6);P.x=.5;P.z=1.5;P.y=51.3;P.vy=0;P.fy=P.y}
@@ -1141,7 +1087,7 @@ let UX='padrao';try{UX=localStorage.vcui||'padrao'}catch(e){}const uxApply=()=>d
 const uxl=document.createElement('div');uxl.style.cssText='display:flex;flex-direction:column;gap:6px';const ub=document.createElement('b');ub.textContent='Estilo da interface';ub.className='ui-section-title';uxl.id='ui-theme-list';$('pack-interface').append(ub,uxl);
 function renderUX(){const row='display:flex;align-items:center;gap:8px;padding:9px;width:100%;box-sizing:border-box;text-align:left;background:#22313b;border:1px solid #455966;border-radius:8px';uxl.innerHTML=UXS.map(x=>`<div style="${row}"><div class="ui-choice-text" style="flex:1;min-width:0"><b>${x.name}</b><br><small>${x.desc}</small></div><button data-ux="${x.id}" ${UX==x.id?'disabled':''}>${UX==x.id?'Em uso':'Usar'}</button></div>`).join('');uxl.querySelectorAll('[data-ux]').forEach(b=>b.onclick=()=>{UX=b.dataset.ux;try{localStorage.vcui=UX}catch(e){}uxApply();renderUX()})}
 const ds0=drawST;drawST=function(){ds0();renderUX()};renderUX();
-window.VX={ST,spawnLev,meteor,part,o:v=>O=v,net:{edits:EDV,snapshot:()=>({ev:EDV,st:ST,pg:PGC}),restore(data){vsk=SK;for(const k in EDV)delete EDV[k];Object.assign(EDV,data.ev||{});for(const k in ST)ST[k]=Number(data.st?.[k])||0;for(const k in PGC)delete PGC[k];for(const[k,v]of Object.entries(data.pg||{}))if(/^\d+$/.test(k))PGC[k]=v?1:0;O=100;VB.spd=VB.arm=VB.oxy=0;}}};
+window.VX={ST,spawnLev,meteor,part,o:v=>O=v};
 })();
 </script>
 <script>
@@ -1468,14 +1414,14 @@ const slot=(g,i)=>{const s=arr(g)[i];return`<div class="s ${cs&&cs[0]==g&&cs[1]=
 function render(){let h='';for(let i=0;i<27;i++)h+=slot('c',i);$('chg1').innerHTML=h;h='';for(let i=9;i<36;i++)h+=slot('p',i);for(let i=0;i<9;i++)h+=slot('p',i);$('chg2').innerHTML=h;ui()}
 const plain=s=>Object.keys(s).length<=2;
 function xfer(a,b){if(a[0]==b[0]&&a[1]==b[1])return;const A=arr(a[0]),B=arr(b[0]),x=A[a[1]],y=B[b[1]];if(!x)return;
-if(y&&y.id==x.id&&plain(x)&&plain(y)){const t=M.min(64-y.n,x.n);y.n+=t;x.n-=t;if(!x.n)A[a[1]]=null}else{A[a[1]]=y||null;B[b[1]]=x}snd(300,.05,'square',.05,.8);window.MULTIPLAYER?.chestEdit(CK,CHST[CK]);render()}
+if(y&&y.id==x.id&&plain(x)&&plain(y)){const t=M.min(64-y.n,x.n);y.n+=t;x.n-=t;if(!x.n)A[a[1]]=null}else{A[a[1]]=y||null;B[b[1]]=x}snd(300,.05,'square',.05,.8);render()}
 function quick(g,i){const A=arr(g),x=A[i],B=arr(g=='c'?'p':'c');if(!x)return;let k=B.findIndex(s=>s&&s.id==x.id&&plain(s)&&plain(x)&&s.n<64);if(k<0)k=B.findIndex(s=>!s);if(k<0)return;xfer([g,i],[g=='c'?'p':'c',k])}
 ov.addEventListener('click',e=>{if(jd){jd=0;return}const q=e.target.closest('.s[data-g]');if(!q)return;const g=q.dataset.g,i=+q.dataset.i;
 if(!cs){if(arr(g)[i])cs=[g,i];render()}else if(cs[0]==g&&cs[1]==i){const c=cs;cs=null;quick(c[0],c[1])}else{const c=cs;cs=null;xfer(c,[g,i])}});
 ov.addEventListener('pointerdown',e=>{const q=e.target.closest('.s[data-g]');if(q&&arr(q.dataset.g)[+q.dataset.i])dr={g:q.dataset.g,i:+q.dataset.i,x:e.clientX,y:e.clientY,m:0}});
 addEventListener('pointermove',e=>{if(!dr)return;if(!dr.m&&M.hypot(e.clientX-dr.x,e.clientY-dr.y)>8){dr.m=1;gh=document.createElement('div');gh.className='s';gh.style.cssText='position:fixed;pointer-events:none;z-index:20;opacity:.85';gh.innerHTML=ico(arr(dr.g)[dr.i].id);document.body.append(gh)}if(dr.m)gh.style.cssText+=`;left:${e.clientX-20}px;top:${e.clientY-20}px`});
 addEventListener('pointerup',e=>{if(!dr)return;const d=dr;dr=null;if(gh){gh.remove();gh=null}if(!d.m)return;jd=1;setTimeout(()=>jd=0,50);const t=document.elementFromPoint(e.clientX,e.clientY),q=t&&t.closest&&t.closest('.s[data-g]');cs=null;if(q)xfer([d.g,d.i],[q.dataset.g,+q.dataset.i]);else render()});
-openChest=function(r){CK=(DIM||0)+':'+r.x+','+r.y+','+r.z;if(!CHST[CK])CHST[CK]=lootSlots(r.x,r.y,r.z);CP=r;window.MULTIPLAYER?.chestOpen(CK);setB(r.x,r.y,r.z,35);cs=null;$('cht').textContent='BAÚ'+(DIM==1?' DO CÉU':DIM==2?' CÓSMICO':'');ov.style.display='flex';if(document.pointerLockElement)document.exitPointerLock();render();snd(220,.15,'square',.08,.7)};
+openChest=function(r){CK=(DIM||0)+':'+r.x+','+r.y+','+r.z;if(!CHST[CK])CHST[CK]=lootSlots(r.x,r.y,r.z);CP=r;setB(r.x,r.y,r.z,35);cs=null;$('cht').textContent='BAÚ'+(DIM==1?' DO CÉU':DIM==2?' CÓSMICO':'');ov.style.display='flex';if(document.pointerLockElement)document.exitPointerLock();render();snd(220,.15,'square',.08,.7)};
 function closeChest(){if(!CK)return;ov.style.display='none';if(gb(CP.x,CP.y,CP.z)==35)setB(CP.x,CP.y,CP.z,34);CK=null;ui();save();try{lock()}catch(e){}snd(180,.12,'square',.06,.7)}
 $('chx').onclick=closeChest;
 addEventListener('keydown',e=>{if(CK&&(e.code=='KeyE'||e.code=='Escape')){e.preventDefault();e.stopImmediatePropagation();closeChest()}},true);
@@ -1579,15 +1525,15 @@ const ML={8:7,44:3},DLY={8:.25,44:.9},FL=new Map(),dirty=new Set(),N6=[[1,0,0],[
 let Q=[],now=0,acc=0,lastDim=0,lt=0,lamb=0,llc=0;
 const fl=id=>id==8||id==44,key=(x,y,z)=>x+','+y+','+z;
 const lvl=(x,y,z)=>{const v=FL.get(key(x,y,z));return v==null?ML[gb(x,y,z)]:v};
-function fset(x,y,z,id){window.MULTIPLAYER?.fluidChange(x,y,z,id);sb(x,y,z,id);const cx=x>>4,cz=z>>4,E=DIM?EDS:EDC,k=cx+','+cz;(E[k]=E[k]||{})[key(x,y,z)]=id;dirty.add(k);if((x&15)==0)dirty.add((cx-1)+','+cz);if((x&15)==15)dirty.add((cx+1)+','+cz);if((z&15)==0)dirty.add(cx+','+(cz-1));if((z&15)==15)dirty.add(cx+','+(cz+1))}
-const enq=(x,y,z,f)=>{if(!window.MULTIPLAYER?.isGuest)Q.push([x,y,z,now+DLY[f]]);};
+function fset(x,y,z,id){sb(x,y,z,id);const cx=x>>4,cz=z>>4,E=DIM?EDS:EDC,k=cx+','+cz;(E[k]=E[k]||{})[key(x,y,z)]=id;dirty.add(k);if((x&15)==0)dirty.add((cx-1)+','+cz);if((x&15)==15)dirty.add((cx+1)+','+cz);if((z&15)==0)dirty.add(cx+','+(cz-1));if((z&15)==15)dirty.add(cx+','+(cz+1))}
+const enq=(x,y,z,f)=>Q.push([x,y,z,now+DLY[f]]);
 const near=(x,y,z)=>M.hypot(x-P.x,y-P.y,z-P.z)<12;
 function put(x,y,z,f,L){fset(x,y,z,f);FL.set(key(x,y,z),L);enq(x,y,z,f)}
 function step(x,y,z){const f=gb(x,y,z);if(!fl(f))return;const o=f==8?44:8;
 for(const[dx,dy,dz]of N6){const n=gb(x+dx,y+dy,z+dz);if(n==o){const cx=x+dx,cy=y+dy,cz=z+dz;if(f==8){fset(cx,cy,cz,26);FL.delete(key(cx,cy,cz))}else{fset(x,y,z,26);FL.delete(key(x,y,z))}if(near(x,y,z)){nz(.4,.12,3500);snd(220,.25,'sawtooth',.03,.4)}return}}
 const L=lvl(x,y,z);if(gb(x,y-1,z)==0){put(x,y-1,z,f,ML[f]);return}
 if(L>1)for(const[dx,,dz]of H4)if(gb(x+dx,y,z+dz)==0)put(x+dx,y,z+dz,f,L-1)}
-function tickF(dt){if(window.MULTIPLAYER?.isGuest)return;if(DIM!=lastDim){lastDim=DIM;Q=[];FL.clear();dirty.clear()}if(DIM)return;now+=dt;acc+=dt;if(acc<.1)return;acc=0;
+function tickF(dt){if(DIM!=lastDim){lastDim=DIM;Q=[];FL.clear();dirty.clear()}if(DIM)return;now+=dt;acc+=dt;if(acc<.1)return;acc=0;
 let n=0;const keep=[];for(const e of Q){if(e[3]<=now&&n<70){n++;step(e[0],e[1],e[2])}else keep.push(e)}Q=keep.length>4000?keep.slice(-4000):keep;
 let c=0;for(const k of dirty){if(c++>=4)break;dirty.delete(k);const[a,b]=k.split(',').map(Number);bc(a,b)}}
 // quebrar/colocar blocos ao redor de fluido faz ele escorrer para o espaço vazio
@@ -1617,7 +1563,7 @@ BT[BED]=[70,71,72];BN[BED]='cama';HD[BED]=.4;
 REC.push({n:'Cama',i:[[6,3],[103,3]],o:[BED,1]});
 tex.needsUpdate=true;ATD=at.toDataURL();ui();
 let BEDP=null;try{BEDP=JSON.parse(localStorage[SK+'_bed']||'null')}catch(e){}
-window.MP_BED_RESET=()=>BEDP=null;const sv=()=>{if(window.MULTIPLAYER?.isGuest)return;try{BEDP?localStorage[SK+'_bed']=JSON.stringify(BEDP):localStorage.removeItem(SK+'_bed')}catch(e){}};
+const sv=()=>{try{BEDP?localStorage[SK+'_bed']=JSON.stringify(BEDP):localStorage.removeItem(SK+'_bed')}catch(e){}};
 const msg=t=>{LTD.textContent=t;LTD.style.display='block';clearTimeout(LTT);LTT=setTimeout(()=>LTD.style.display='none',3400)};
 const bf=document.createElement('div');bf.style.cssText='position:fixed;inset:0;background:#02030a;opacity:0;pointer-events:none;z-index:12;transition:opacity .7s;display:flex;align-items:center;justify-content:center;color:#cfe8ff;font:700 clamp(15px,4.5vw,24px) system-ui,Arial;text-align:center;white-space:pre-line';document.body.appendChild(bf);
 let slp=0;
@@ -1774,7 +1720,7 @@ function stackVis(it){
   while(it.cl.length+1<want){const c=it.id==87?mk(87):it.s.clone(true);const k=it.cl.length;c.position.set(k?-.06:.07,k?.04:.02,k?-.05:.07);if(it.id==87)c.position.y-=.18;it.m.add(c);it.cl.push(c)}
   while(it.cl.length+1>want){it.m.remove(it.cl.pop())}}
 function rm(i){const it=GI[i];if(it.m){sc.remove(it.m);if(it.id!=87)it.m.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.material)c.material.dispose()})}GI.splice(i,1)}
-window.MP_GROUND_RESET=()=>{while(GI.length)rm(GI.length-1);};window.DROP_ITEM=(id,n,meta)=>spawnGI(id,n,meta);
+window.DROP_ITEM=(id,n,meta)=>spawnGI(id,n,meta);
 function spawnGI(id,n,meta){
   if(GI.length>=MAXGI){toast('Muitos itens no chão');return false}
   const d=new THREE.Vector3(0,0,-1).applyEuler(cam.rotation);
@@ -2191,7 +2137,7 @@ mkLeg(-2,0,16,0,32);mkLeg(2,16,48,0,48);
 // ===== ARMADURAS + EQUIPAMENTO DE COSTAS (modelos próprios, texturas procedurais 32px) =====
 // Medidas em px do rig Minecraft (1px = KS). Camadas: pele < jaqueta/manga/calça (+.25) < calça-armadura (+.5) < peitoral/botas/capacete (+.6~.8).
 // Funciona em qualquer rig {head,body,armR,armL,legR,legL}: VxArmor.build(rig) -> { set([capacete,peito,calça,bota]), tick(dt,{air,vy,spd}) }.
-// Só IDs + estado de voo trafegam: fácil de sincronizar entre jogadores. Peito aceita armadura, 143 asas, 154 jetpack, 156 capa.
+// Peito aceita armadura, 143 asas, 154 jetpack, 156 capa.
 const VA=(()=>{
  const M=Math,ah=(x,y,s)=>{let h=Math.imul(x+1,374761393)^Math.imul(y+7,668265263)^Math.imul(s+3,1274126177);h=Math.imul(h^(h>>>13),1103515245);return((h^(h>>>16))>>>0)/4294967296};
  const mkTex=(w,h,fn)=>{const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'));const t=new T.CanvasTexture(c);t.magFilter=t.minFilter=T.NearestFilter;t.generateMipmaps=false;return t};
@@ -2261,33 +2207,9 @@ const VA=(()=>{
      ws.forEach(({wg,fs,side})=>{wg.rotation.y=side*(.12+open*.7);wg.rotation.z=side*flap;fs.forEach((f,i)=>f.rotation.z=side*((-1.35+i*.05)*(1-open)+(.85-i*.33)*open))})}
     if(jp.visible){const th=air?.35+rise*.65:0;fl.forEach((f,i)=>{f.visible=th>.05;f.scale.set(.8+th*.4,th*(.8+.2*M.sin(t*40+i*2))+.05,.8+th*.4)})}
     if(cg.visible){const lean=.04+sp2*.55+(air?.3:0);cs.forEach((s,i)=>s.rotation.x=lean*(1+.35*i)+M.sin(t*4+i*1.2)*.04*(.4+sp2))}}}}
- return{build,PAL,isSharedMaterial:m=>Object.values(MC).some(a=>a.includes(m))}})();
+ return{build,PAL}})();
 const ARMOR=VA.build({head,body:av,armR:aR,armL:aL,legR:av.lg[0],legL:av.lg[1]});
 window.VxArmor=VA;
-// Reuse the game's own skin UVs, proportions, armor rig and voxel item meshes.
-window.MP_AVATAR=(()=>{
- const geometry=new Map(),materials=new Map();
- function build(skin=0){
-  const root=new T.Group(),parts=[];root.userData.netPlayer=true;let item=null,itemID=-1,equipment='';
-  const index=Math.max(0,Math.min(NB-1,skin|0));
-  if(!materials.has(index))materials.set(index,[new T.MeshLambertMaterial({map:TXS[index],alphaTest:.5}),new T.MeshLambertMaterial({map:TXS[index],transparent:true,alphaTest:.5,side:T.DoubleSide})]);
-  function piece(parent,w,h,d,u,v,top=null,overlay=false,expansion=.25){const ex=overlay?expansion:0,k=[w,h,d,u,v,top,ex].join(',');if(!geometry.has(k)){const g=mcg(w,h,d,u,v,ex);if(top!==null)g.translate(0,-(h/2-top)*KS,0);geometry.set(k,g);}const mesh=new T.Mesh(geometry.get(k),materials.get(index)[overlay?1:0]);mesh.castShadow=true;parent.add(mesh);parts.push(mesh);}
-  const h=new T.Group();h.position.y=24*KS;root.add(h);piece(h,8,8,8,0,0,8);piece(h,8,8,8,32,0,8,true,.5);
-  const body=new T.Group();body.position.y=18*KS;root.add(body);piece(body,8,12,4,16,16);piece(body,8,12,4,16,32,null,true);
-  const limb=(x,y,u,v,ou,ov,top)=>{const g=new T.Group();g.position.set(x*KS,y*KS,0);root.add(g);piece(g,4,12,4,u,v,top);piece(g,4,12,4,ou,ov,top,true);return g;};
-  const ar=limb(-6,22,40,16,40,32,2),al=limb(6,22,32,48,48,48,2),lr=limb(-2,12,0,16,0,32,0),ll=limb(2,12,16,48,0,48,0);
-  const armor=VA.build({head:h,body:root,armR:ar,armL:al,legR:lr,legL:ll});
-  const ownedArmorGeometries=new Set(),ownedArmorMaterials=new Set();root.traverse(o=>{if(o.geometry&&!parts.includes(o)){ownedArmorGeometries.add(o.geometry);for(const m of Array.isArray(o.material)?o.material:[o.material])if(m&&!VA.isSharedMaterial(m))ownedArmorMaterials.add(m);}});
-  function clearItem(){if(!item)return;ar.remove(item);if(!item.userData.pixelTorch)item.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material){const a=Array.isArray(o.material)?o.material:[o.material];a.forEach(m=>m.dispose());}});item=null;}
-  let phase=0;
-  return {root,update(s,dt){root.userData.netState=s;root.rotation.y=s.yaw+Math.PI;h.rotation.x=-s.pitch*.9;h.position.y=24*KS-(s.sneak?.12:0);phase+=dt*Math.min(9,s.speed)*2.2;const swing=Math.sin(phase)*.8*Math.min(1,s.speed/4);lr.rotation.x=swing;ll.rotation.x=-swing;al.rotation.x=swing*.9;ar.rotation.x=s.swing?-1.3+Math.sin(performance.now()*.014)*.7:(s.held?-.35:0)-swing*.9;
-   const sig=s.eq.join(',')+':'+(s.coats||[]).join(',');if(sig!==equipment){armor.set(s.eq,s.coats||[]);equipment=sig;}armor.tick(dt,{air:s.air,vy:s.vy,spd:Math.min(1,s.speed/4)});
-   if(s.held!==itemID){clearItem();itemID=s.held;if(itemID){if(itemID===87){item=TORCH3D.makeModel();item.scale.setScalar(.7);item.position.set(0,-.85,.27);}else if(itemID<100&&BT[itemID]&&itemID!==8){item=new T.Mesh(cubeG(itemID),new T.MeshLambertMaterial({map:tex,alphaTest:.5}));item.scale.setScalar(1.2);item.position.set(0,-.56,.27);}else{item=voxM(itemID,(SW.includes(itemID)||PK.includes(itemID))?2:1);item.traverse(o=>{if(o.material)o.material.depthTest=true;o.frustumCulled=true;o.renderOrder=0;});item.scale.setScalar(.8);item.position.set(0,-.5,.2);item.rotation.y=-Math.PI/2;}item.userData.netHeld=itemID;ar.add(item);}}
-  },dispose(){clearItem();sc.remove(root);ownedArmorGeometries.forEach(g=>g.dispose());ownedArmorMaterials.forEach(m=>{m.map?.dispose();m.dispose();});root.clear();}};
- }
- return {build};
-})();
-
 let esig='';
 function equip(){const k=EQ.map(s=>s?s.id+':'+(s.coat||0):0).join(',');if(k==esig)return;esig=k;ARMOR.set(EQ.map(s=>s?s.id:0),EQ.map(s=>s?.coat||0))}
 // item na mão direita
@@ -2680,7 +2602,7 @@ const WORLD_FEATURES=(()=>{
  function textures(){const specs=[[73,120,[107,88,128]],[74,121,[224,211,175]],[75,122,[182,52,67]],[76,123,[37,25,55]],[77,124,[49,52,60]],[78,125,[123,43,24]],[79,126,[126,97,56]]];for(const[id,tile,color]of specs){BT[id]=[tile,tile,tile];tp(tile,color,o=>{if(id===75){ax.fillStyle='#f0dfcd';for(const[x,y]of[[2,3],[9,1],[12,9],[4,12]])ax.fillRect(o+x,y,3,3);}else if(id===78){ax.fillStyle='#ffc15a';for(let q=0;q<16;q++){ax.fillRect(o+((q*3+4)%16),q,2,1);if(q%4===0)ax.fillRect(o,q,16,1);}}else if(id===79){ax.fillStyle='#d3b765';ax.fillRect(o+2,2,12,1);ax.fillRect(o+2,12,12,1);ax.fillRect(o+7,5,3,6);}else if(id===74){ax.fillStyle='#bbae8d';for(let q=2;q<16;q+=5)ax.fillRect(o+q,0,1,16);}else if(id===77){ax.fillStyle='#20232b';ax.fillRect(o,7,16,1);ax.fillRect(o+7,0,1,7);ax.fillRect(o+3,8,1,8);}},14,8);}tex.needsUpdate=true;ATD=at.toDataURL();}
  Object.assign(BN,{73:'micelio',74:'caule de cogumelo',75:'chapéu de cogumelo',76:'obsidiana',77:'pedra negra',78:'magma',79:'tesouro enterrado'});Object.assign(IN,{73:'Micélio',74:'Caule de Cogumelo',75:'Cogumelo Rubro',76:'Obsidiana',77:'Pedra Negra',78:'Magma',79:'Relíquia Enterrada'});Object.assign(HD,{73:.3,74:.4,75:.3,76:4,77:1.4,78:1.5,79:1});DR[79]=3;
  textures();ui();document.title="VoxelCraft 3D — Aldeias Raras e Estruturas";
- return {ground,skyFeatures,drawGround,drawSky,build,nearest,names,clearCaches(){cache.clear();skyCache.clear();rewards.clear();},rewardAt:(dim,x,y,z)=>rewards.get(dim+':'+x+','+y+','+z),region,skyRegion};
+ return {ground,skyFeatures,drawGround,drawSky,build,nearest,names,rewardAt:(dim,x,y,z)=>rewards.get(dim+':'+x+','+y+','+z),region,skyRegion};
 })();
 
 </script>
@@ -2719,7 +2641,7 @@ const TEXTURE_PORT=(()=>{
  const previousSet=setTex;setTex=function(id,keep){const p=TEXS.find(p=>p.id===id);if(!p)return;previousSet(id,keep);render();};
  addEventListener('keydown',e=>{if(e.key==='Escape'&&$('ttp').style.display==='flex'){e.preventDefault();e.stopImmediatePropagation();$('ttx').click();}},true);
  let saved;try{saved=localStorage.vctx;}catch(e){}if(saved==='ashen')setTex('ashen',true);else afterAtlas(STK);render();
- document.title='VoxelCraft 3D — Ashen 16x';
+ document.title='VoxelCraft 3D — Singleplayer';
  return {afterAtlas,drawLava,render,close,get tab(){return tab;}};
 })();
 
@@ -3415,232 +3337,6 @@ start=function(){if(aw.hardcore&&aw.dead){run=0;$('menu').style.display=$('wm').
 
 </script>
 <script>
-// PeerJS guest rooms. The host owns world edits; guests never save over local worlds.
-const MULTIPLAYER=(()=>{
- const VERSION=1,PREFIX='voxelcraft-room-v1-',MAX_GUESTS=8,MAX_SNAPSHOT=12*1024*1024,PART=16384;
- const peers=new Map(),avatars=new Map(),pendingBlocks=new Map(),overrides=new Map();
- let role=null,phase='idle',peer=null,connection=null,code='',generation=0,sequence=0,applied=false,remoteEdit=false,rebuilding=false,ready=false;
- let timeout=null,assembly=null,lastSend=0,lastFlush=0,lastFrame=0,lastChest=0,lastTime=0,localLast=null,joinedName='',localName='Jogador',servers=[];
- let receiveBacklog=[],guestQueue=new Map(),installed=false;
- try{const a=JSON.parse(localStorage.vcservers||'[]');if(Array.isArray(a))servers=a.filter(s=>s&&/^[A-Z2-9]{6}$/.test(s.code)).slice(0,24);localName=(localStorage.vcplayername||'Jogador').slice(0,20);}catch(e){}
- const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
- const clone=o=>JSON.parse(JSON.stringify(o));
- function status(text,error=false){$('mp-status').textContent=text;$('mp-status').dataset.error=error?'true':'false';if(role==='guest'&&phase==='joining'&&$('mp-modal').style.display==='flex')$('mp-modal-text').textContent=text;}
- function parseCode(value){
-  let raw=String(value||'').trim();if(!raw||raw.length>4096)return null;
-  try{raw=decodeURIComponent(raw);}catch(e){return null;}
-  const normalize=v=>{const c=String(v||'').trim().replace(/^voxelcraft-room-v1-/i,'').replace(/[\s-]/g,'').toUpperCase();return /^[A-Z2-9]{6}$/.test(c)?c:null;};
-  if(!/[?/#=:]/.test(raw))return normalize(raw);
-  try{const u=new URL(raw,location.href),query=u.searchParams.get('sala');if(query!==null)return normalize(query);const hash=u.hash.slice(1).replace(/^\?/,'');if(hash){const p=new URLSearchParams(hash);return normalize(p.has('sala')?p.get('sala'):hash);}if(/^sala=/i.test(raw))return normalize(new URLSearchParams(raw).get('sala'));}catch(e){}return null;
- }
- // One canonical room ID for both roles; guests always obtain a separate PeerJS ID.
- const roomID=room=>PREFIX+room;
- // Relay credentials stay in this tab; they never enter room links, snapshots or chat.
- let relay=null;try{const v=JSON.parse(sessionStorage.vcRelay||'null');if(v&&Array.isArray(v.urls)&&v.urls.every(validTurnURL)&&typeof v.username==='string'&&typeof v.credential==='string')relay=v;}catch(e){}
- function validTurnURL(v){return typeof v==='string'&&v.length<300&&/^turns?:(?:\[[0-9a-f:]+\]|[a-z0-9.-]+)(?::\d{1,5})?(?:\?transport=(?:udp|tcp))?$/i.test(v);}
- function routeMessage(){return relay?'A rede não conseguiu conectar os jogadores. Verifique o servidor TURN e suas credenciais; tente turns: na porta 443.':'Não foi possível conectar os jogadores pela rede. Mantenha o jogo do anfitrião aberto. Tente a mesma rede Wi-Fi ou configure um servidor TURN em “Conexão / Relay”.';}
- const peerOptions=()=>{const options={debug:0,host:'0.peerjs.com',port:443,path:'/',key:'peerjs',secure:true};if(relay)options.config={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:relay.urls,username:relay.username,credential:relay.credential}],iceTransportPolicy:relay.force?'relay':'all'};return options;};
- function installRelay(){
-  const box=document.createElement('details');box.id='mp-relay';box.className='mp-box';box.innerHTML='<summary>Conexão / Relay (TURN)</summary><p class="mp-small">Algumas redes móveis e roteadores exigem um relay. Use os dados fornecidos pelo seu serviço TURN. Configure antes de abrir ou entrar na sala.</p><div class="mp-row"><label for="mp-turn-urls">Endereços TURN (um por linha)</label><textarea id="mp-turn-urls" rows="2" placeholder="turns:seu-servidor:443?transport=tcp" spellcheck="false"></textarea><label for="mp-turn-user">Usuário TURN</label><input id="mp-turn-user" autocomplete="off"><label for="mp-turn-pass">Credencial TURN</label><input id="mp-turn-pass" type="password" autocomplete="off"><label><input id="mp-turn-force" type="checkbox"> Usar somente relay (diagnóstico)</label><button id="mp-turn-save">Aplicar nesta aba</button><button id="mp-turn-clear">Remover configuração</button></div><p id="mp-turn-status" class="mp-small" role="status"></p>';$('mp-servers').appendChild(box);
-  const render=()=>{$('mp-turn-urls').value=relay?relay.urls.join('\n'):'';$('mp-turn-user').value=relay?.username||'';$('mp-turn-pass').value=relay?.credential||'';$('mp-turn-force').checked=!!relay?.force;$('mp-turn-status').textContent=relay?'Relay configurado nesta aba. As credenciais não são compartilhadas.':'Nenhum relay personalizado configurado. GitHub Pages hospeda o jogo, mas não fornece um servidor TURN.';};
-  $('mp-turn-save').onclick=()=>{if(role){$('mp-turn-status').textContent='Feche a sessão antes de alterar a conexão.';return;}const urls=$('mp-turn-urls').value.trim().split(/[\s,]+/).filter(Boolean),username=$('mp-turn-user').value.trim(),credential=$('mp-turn-pass').value;if(!urls.length||urls.length>8||!urls.every(validTurnURL)||!username||!credential){$('mp-turn-status').textContent='Informe endereços turn: / turns:, usuário e credencial válidos.';return;}relay={urls,username,credential,force:$('mp-turn-force').checked};try{sessionStorage.vcRelay=JSON.stringify(relay);}catch(e){}render();};
-  $('mp-turn-clear').onclick=()=>{if(role){$('mp-turn-status').textContent='Feche a sessão primeiro.';return;}relay=null;try{sessionStorage.removeItem('vcRelay');}catch(e){}render();};render();
- }
-
- function recoverSignaling(p,token,fail){let tries=0,timer=null;const valid=()=>token===generation&&peer===p&&!p.destroyed;
-  const retry=()=>{if(!valid())return;if(!p.disconnected){tries=0;return;}if(tries>=3){if(role==='guest'&&connection?.open||role==='host'&&[...peers.values()].some(v=>v.ready&&v.conn.open)){status('Jogo conectado; serviço de novas conexões indisponível.',true);timer=setTimeout(retry,15000);tries=0;return;}fail();return;}tries++;status('Restabelecendo serviço de conexão… '+tries+'/3');try{p.reconnect();}catch(e){}timer=setTimeout(retry,3000*tries);};
-  p.on('disconnected',()=>{clearTimeout(timer);retry();});p.on('open',()=>{clearTimeout(timer);tries=0;});p.on('close',()=>clearTimeout(timer));
- }
- function watchRTC(conn,token,fail){let timer=null,poll=null,rtc=null,ended=false,checks=0;
-  const cleanup=()=>{ended=true;clearTimeout(timer);clearTimeout(poll);if(rtc){rtc.removeEventListener?.('connectionstatechange',changed);rtc.removeEventListener?.('iceconnectionstatechange',changed);}};
-  const changed=()=>{clearTimeout(timer);if(ended||token!==generation)return;const state=rtc.connectionState,ice=rtc.iceConnectionState;if(state==='failed'||ice==='failed'){conn.__routeFailed=true;cleanup();fail(routeMessage());}else if(state==='disconnected'||ice==='disconnected')timer=setTimeout(()=>{if(!ended&&token===generation&&(rtc.connectionState==='disconnected'||rtc.iceConnectionState==='disconnected')){conn.__routeFailed=true;cleanup();fail(routeMessage());}},12000);};
-  const listen=()=>{if(ended||token!==generation)return;rtc=conn.peerConnection;if(!rtc?.addEventListener){if(++checks<600)poll=setTimeout(listen,100);return;}rtc.addEventListener('connectionstatechange',changed);rtc.addEventListener('iceconnectionstatechange',changed);changed();};listen();conn.on('close',cleanup);
- }
- function shortCode(){const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',bytes=new Uint8Array(6);if(window.crypto?.getRandomValues)crypto.getRandomValues(bytes);else for(let i=0;i<6;i++)bytes[i]=Math.random()*256;return Array.from(bytes,n=>alphabet[n%alphabet.length]).join('');}
- function link(){try{const url=new URL(location.href);url.searchParams.set('sala',code);url.hash='';return url.href;}catch(e){return '?sala='+code;}}
- function message(conn,type,data={}){if(!conn?.open)return false;try{conn.send({v:VERSION,type,...data});return true;}catch(e){return false;}}
- function broadcast(type,data,except=null){for(const p of peers.values())if(p.ready&&p.conn!==except)message(p.conn,type,data);}
- function setTab(tab){const worlds=tab==='worlds';$('mp-worlds').hidden=!worlds;$('mp-servers').hidden=worlds;for(const[id,on]of[['mp-tab-worlds',worlds],['mp-tab-servers',!worlds]]){$(id).setAttribute('aria-selected',String(on));$(id).tabIndex=on?0:-1;}if(!worlds)renderServers();}
- function toggleUI(){syncChat();const b=$('mp-host');b.style.display=started?'':'none';b.textContent=role==='guest'?'Sair do Servidor':role==='host'?(phase==='connected'?'Fechar Mundo':'Cancelar abertura'):'Abrir para Convidados';b.disabled=!started||!!aw.dead||phase==='joining';$('mp-join').disabled=role!==null||applied; $('mp-cancel').hidden=phase!=='joining';$('mp-session').hidden=role===null;$('mp-session-name').textContent=role==='host'?'Seu mundo está aberto · '+code:role==='guest'?'Sala '+code:'Sem sessão';for(const id of ['bkx','bki'])$(id).disabled=role==='guest'||applied;}
- function renderServers(){const list=$('mp-server-list');list.textContent='';if(!servers.length){const p=document.createElement('p');p.className='mp-small';p.textContent='Nenhuma sala salva. Entre por código ou link para adicionar uma.';list.appendChild(p);}for(const s of servers){const row=document.createElement('div');row.className='mp-lobby';const name=document.createElement('div');name.className='mp-title';name.textContent=s.name||'Mundo VoxelCraft';const sub=document.createElement('small');sub.textContent=s.code+(role==='guest'&&code===s.code&&phase==='connected'?' · Conectado':' · Sala salva');name.appendChild(sub);const enter=document.createElement('button');enter.textContent='Entrar';enter.disabled=role!==null;enter.onclick=()=>join(s.code);const remove=document.createElement('button');remove.textContent='✕';remove.title='Remover sala salva';remove.onclick=()=>{servers=servers.filter(x=>x.code!==s.code);persistServers();renderServers();};row.append(name,enter,remove);list.appendChild(row);}toggleUI();}
- function persistServers(){try{localStorage.vcservers=JSON.stringify(servers);}catch(e){}}
- function remember(room,name){servers=servers.filter(s=>s.code!==room);servers.unshift({code:room,name:String(name||'Mundo VoxelCraft').slice(0,40),lastJoined:Date.now()});servers.length=Math.min(24,servers.length);persistServers();renderServers();}
- function modal(title,text,hosting=false,disconnected=false){$('mp-modal-title').textContent=title;$('mp-modal-text').textContent=text;$('mp-host-info').hidden=!hosting;$('mp-return').hidden=!disconnected;$('mp-modal-close').hidden=disconnected;$('mp-modal').style.display='flex';if(hosting){$('mp-code').textContent=code;$('mp-link').value=link();updatePeople();}}
- function updatePeople(){const active=[...peers.values()].filter(p=>p.ready);$('mp-people').textContent=active.length+' / '+MAX_GUESTS+' convidados'+(active.length?' · '+active.map(p=>p.name).join(', '):'');}
- async function copyLink(){const value=link();try{if(!navigator.clipboard?.writeText)throw Error('fallback');await navigator.clipboard.writeText(value);}catch(e){const field=$('mp-link');field.value=value;field.focus();field.select();try{if(!document.execCommand('copy'))throw Error('copy');}catch(x){$('mp-modal-text').textContent='Selecione o link abaixo e copie para compartilhar.';return;}}$('mp-modal-text').textContent='Link copiado! Envie aos seus convidados.';}
- let peerScriptPromise=null;
- function loadPeer(){if(window.Peer)return Promise.resolve(window.Peer);if(peerScriptPromise)return peerScriptPromise;peerScriptPromise=new Promise((resolve,reject)=>{
-  const sources=['https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js','https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js'];let attempt=0;
-  function next(){if(attempt>=sources.length){peerScriptPromise=null;reject(Error('Não foi possível carregar a conexão multiplayer. Verifique a internet e tente novamente.'));return;}const script=document.createElement('script');script.src=sources[attempt++];script.async=true;let done=false;const timer=setTimeout(fail,10000);function fail(){if(done)return;done=true;clearTimeout(timer);script.remove();next();}script.onerror=fail;script.onload=()=>{if(done)return;if(!window.Peer){fail();return;}done=true;clearTimeout(timer);resolve(window.Peer);};document.head.appendChild(script);}next();
- });return peerScriptPromise;}
- function networkError(err,joining=false){const type=err?.type;return type==='webrtc'?routeMessage():type==='peer-unavailable'?'Sala não encontrada ou mundo fechado. Confira o código.':type==='unavailable-id'?'Este código já está em uso. Tente abrir o mundo novamente.':type==='browser-incompatible'?'Este navegador não oferece suporte à conexão multiplayer.':type==='network'||type==='server-error'||type==='socket-error'?'Não foi possível alcançar o serviço de conexão. Verifique a internet.':joining?'Conexão interrompida. Confira o código e tente novamente.':'A sessão foi interrompida. Abra o mundo novamente.';}
- function closeAvatar(id){const a=avatars.get(id);if(a){a.rig.dispose();avatars.delete(id);}}
- function clean(){resetChat();generation++;clearTimeout(timeout);timeout=null;const oldPeer=peer;peer=null;const oldConnection=connection;connection=null;for(const p of peers.values()){clearTimeout(p.timer);try{p.conn.close();}catch(e){}}peers.clear();for(const id of [...avatars.keys()])closeAvatar(id);try{oldConnection?.close();oldPeer?.destroy();}catch(e){}assembly=null;guestQueue.clear();pendingBlocks.clear();overrides.clear();receiveBacklog=[];localLast=null;lastSend=lastFlush=lastChest=lastTime=0;rebuilding=false;}
- function stopHost(reason='O anfitrião fechou o mundo.'){if(role!=='host')return;for(const p of peers.values())message(p.conn,'closed',{reason});role=null;phase='idle';code='';clean();$('mp-modal').style.display='none';status('Mundo fechado para convidados.');toggleUI();renderServers();}
- function failGuest(reason){if(role!=='guest')return;const wasApplied=applied;role=null;phase='idle';clean();try{const url=new URL(location.href);url.searchParams.delete('sala');url.hash='';history.replaceState(null,'',url.href);}catch(e){}status(reason,true);toggleUI();renderServers();if(wasApplied){run=0;document.exitPointerLock?.();$('cfg').style.display='none';modal('Conexão encerrada',reason+' Seu mundo local foi preservado.',false,true);}}
- function cancelJoin(){if(role==='guest'&&!applied)failGuest('Conexão cancelada.');}
- function leave(){if(role==='host'){stopHost();return;}if(role!=='guest'&&!applied)return;message(connection,'leave');role=null;phase='idle';clean();try{const url=new URL(location.href);url.searchParams.delete('sala');url.hash='';history.replaceState(null,'',url.href);sessionStorage.removeItem('vcp');}catch(e){}location.reload();}
- async function openHost(attempt=0){if(role==='host'){stopHost();return;}if(role||applied||!started||aw.dead)return;localName=username($('mp-name').value||localName);$('mp-name').value=localName;try{localStorage.vcplayername=localName;}catch(e){}role='host';phase='opening';code=shortCode();const token=++generation;status('Abrindo mundo para convidados…');toggleUI();
-  try{const PeerClass=await loadPeer();if(token!==generation||role!=='host')return;peer=new PeerClass(roomID(code),peerOptions());const p=peer;
-   timeout=setTimeout(()=>{if(token===generation){stopHost();status('Tempo esgotado ao abrir a sala. Tente novamente.',true);}},18000);
-   p.on('open',()=>{if(token!==generation)return;clearTimeout(timeout);if(phase==='connected'){status('Mundo aberto · '+code);return;}phase='connected';status('Mundo aberto · '+code);toggleUI();modal('Mundo aberto para convidados','Compartilhe o código ou link. O mundo fica aberto enquanto esta página estiver conectada.',true);});
-   p.on('connection',conn=>{if(token!==generation||role!=='host'){conn.close();return;}acceptGuest(conn,token);});
-   p.on('error',err=>{if(token!==generation)return;if(phase==='connected'&&['network','socket-error','server-error','socket-closed'].includes(err?.type)){status('Restabelecendo sinalização da sala…');return;}if(err?.type==='unavailable-id'&&attempt<2){stopHost();openHost(attempt+1);return;}const text=networkError(err);stopHost();status(text,true);modal('Não foi possível abrir a sala',text);});
-   recoverSignaling(p,token,()=>{if(token===generation){stopHost();modal('Sala desconectada','Não foi possível restabelecer o serviço. Abra o mundo novamente.');}});
-   p.on('close',()=>{if(token===generation)stopHost();});
-  }catch(err){if(token!==generation)return;stopHost();status(err.message,true);modal('Não foi possível abrir a sala',err.message);}
- }
- function validState(s){if(!s||!['x','y','z','yaw','pitch','speed','vy'].every(k=>Number.isFinite(s[k])))return null;if(Math.abs(s.x)>1000000||Math.abs(s.z)>1000000||s.y< -512||s.y>4096||!Number.isInteger(s.dim)||s.dim<0||s.dim>2)return null;
-  return{x:s.x,y:s.y,z:s.z,yaw:Math.atan2(Math.sin(s.yaw),Math.cos(s.yaw)),pitch:cl(s.pitch,-1.6,1.6),dim:s.dim,speed:cl(s.speed,0,16),vy:cl(s.vy,-100,100),held:Number.isInteger(s.held)&&s.held>=0&&s.held<=173?s.held:0,skin:cl(s.skin|0,0,7),eq:Array.from({length:4},(_,i)=>cl(s.eq?.[i]|0,0,173)),coats:Array.from({length:4},(_,i)=>[120,121,122].includes(s.coats?.[i])?s.coats[i]:0),swing:!!s.swing,sneak:!!s.sneak,air:!!s.air};}
- function ownState(now){const pos={x:P.x,y:P.y,z:P.z},dt=localLast?Math.max(.01,(now-localLast.time)/1000):.05;const speed=localLast?Math.hypot(pos.x-localLast.x,pos.z-localLast.z)/dt:0;localLast={...pos,time:now};return validState({...pos,yaw:P.yaw,pitch:P.pitch,dim:DIM,speed,vy:P.vy||0,held:inv[sel]?.id||0,skin:CF.skin|0,eq:EQ.map(s=>s?.id||0),coats:EQ.map(s=>s?.coat||0),swing:!!(atk||useD||bt),sneak:!!K.ShiftLeft,air:!P.gd});}
- function player(id,name,state){if(!state||id===peer?.id||avatars.size>=MAX_GUESTS&&!avatars.has(id))return;let a=avatars.get(id);if(a&&a.skin!==state.skin){closeAvatar(id);a=null;}if(!a){const rig=MP_AVATAR.build(state.skin);sc.add(rig.root);rig.root.position.set(state.x,state.y,state.z);a={rig,name:String(name||'Jogador').slice(0,20),skin:state.skin,state,previous:{...state},stamp:performance.now()};avatars.set(id,a);}else{a.previous={...a.state,x:a.rig.root.position.x,y:a.rig.root.position.y,z:a.rig.root.position.z};a.state=state;a.stamp=performance.now();}a.name=String(name||a.name).slice(0,20);a.rig.update(state,0);}
- function validBlock(b){return b&&[b.x,b.y,b.z,b.id,b.dim].every(Number.isInteger)&&Math.abs(b.x)<=1000000&&Math.abs(b.z)<=1000000&&b.y>=0&&b.y<H&&b.id>=0&&b.id<100&&(b.id===0||BT[b.id])&&b.dim>=0&&b.dim<=2;}
- const blockKey=b=>b.dim+':'+b.x+','+b.y+','+b.z;
- function edits(d){return d===2?VX.net.edits:d===1?EDS:EDC;}
- function storeBlock(b){const k=(b.x>>4)+','+(b.z>>4),e=edits(b.dim);(e[k]=e[k]||{})[b.x+','+b.y+','+b.z]=b.id;}
- function applyBlock(b){if(!validBlock(b))return;storeBlock(b);if(b.dim!==DIM||!CD[(b.x>>4)+','+(b.z>>4)])return;remoteEdit=true;try{setB(b.x,b.y,b.z,b.id);}finally{remoteEdit=false;}}
- function changed(b){if(role==='host'){b.seq=++sequence;pendingBlocks.set(blockKey(b),b);for(const p of peers.values())if(!p.ready){p.backlog.set(blockKey(b),b);if(p.backlog.size>8192){message(p.conn,'rejected',{reason:'Mundo muito ativo durante a entrada. Tente novamente.'});p.conn.close();}}}else if(role==='guest'&&phase==='connected')guestQueue.set(blockKey(b),b);}
- function acceptGuest(conn,token){if(peers.size>=MAX_GUESTS||peers.has(conn.peer)){conn.on('open',()=>{message(conn,'rejected',{reason:'Sala cheia. Limite de '+MAX_GUESTS+' convidados.'});setTimeout(()=>conn.close(),100);});return;}
-  const entry={conn,ready:false,hello:false,name:'Convidado',state:null,backlog:new Map(),timer:null,lastState:0,rate:0,window:performance.now(),chest:''};peers.set(conn.peer,entry);
-  entry.timer=setTimeout(()=>{if(token===generation&&!entry.ready){message(conn,'rejected',{reason:'Tempo esgotado ao entrar na sala.'});conn.close();}},90000);
-  conn.on('data',data=>{if(token!==generation||role!=='host'||!data||data.v!==VERSION)return;const now=performance.now();if(now-entry.window>1000){entry.window=now;entry.rate=0;}if(++entry.rate>160){conn.close();return;}
-   if(data.type==='hello'&&!entry.hello){entry.name=uniqueUsername(data.name);entry.hello=true;sendWorld(entry,token).catch(err=>{if(token===generation){message(conn,'rejected',{reason:err.message});conn.close();}});}
-   else if(data.type==='ready'&&entry.hello&&!entry.ready&&entry.sent){clearTimeout(entry.timer);entry.ready=true;entry.state=validState(data.state)||entry.spawn;const blocks=[...entry.backlog.values()];for(let i=0;i<blocks.length;i+=128)message(conn,'blocks',{blocks:blocks.slice(i,i+128)});entry.backlog.clear();message(conn,'joined',{id:conn.peer,name:entry.name,players:[{id:peer.id,name:localName,state:ownState(now)},...[...peers.values()].filter(p=>p.ready&&p!==entry).map(p=>({id:p.conn.peer,name:p.name,state:p.state}))]});for(const[key,value]of Object.entries(CHST))message(conn,'chest',{key,value:clone(value)});broadcast('player',{id:conn.peer,name:entry.name,state:entry.state},conn);player(conn.peer,entry.name,entry.state);message(conn,'chatHistory',{messages:chatLog.slice(-50)});updatePeople();}
-   else if(data.type==='chatSend'&&entry.ready){const text=chatText(data.text);if(text&&now-(entry.chatLast??-Infinity)>=650){entry.chatLast=now;hostChat(conn.peer,entry.name,text);}}
-   else if(data.type==='state'&&entry.ready){const s=validState(data.state);if(!s)return;entry.state=s;player(conn.peer,entry.name,s);broadcast('player',{id:conn.peer,name:entry.name,state:s},conn);}
-   else if(data.type==='blocks'&&entry.ready&&Array.isArray(data.blocks)&&data.blocks.length<=128){for(const b of data.blocks){if(!validBlock(b)||!entry.state||b.dim!==entry.state.dim||Math.hypot(b.x+.5-entry.state.x,b.y+.5-entry.state.y,b.z+.5-entry.state.z)>14)continue;applyBlock(b);changed({...b});}}
-   else if(data.type==='chestOpen'&&entry.ready){const p=parseChest(data.key);entry.chest=p&&entry.state&&p.dim===entry.state.dim&&Math.hypot(p.x-entry.state.x,p.y-entry.state.y,p.z-entry.state.z)<9?data.key:'';if(entry.chest&&CHST[entry.chest])message(conn,'chest',{key:entry.chest,value:clone(CHST[entry.chest])});}
-   else if(data.type==='chestEdit'&&entry.ready&&entry.chest===data.key){const p=parseChest(data.key);if(!p||p.dim!==entry.state.dim||Math.hypot(p.x-entry.state.x,p.y-entry.state.y,p.z-entry.state.z)>9||!Array.isArray(data.value)||data.value.length!==27||!CHST[data.key])return;CHST[data.key]=sanitizeSlots(data.value,27);broadcast('chest',{key:data.key,value:clone(CHST[data.key])});if(window.CHX)CHX.render();}
-   else if(data.type==='leave')conn.close();
-  });
-  const closed=()=>{if(token!==generation||peers.get(conn.peer)!==entry)return;clearTimeout(entry.timer);peers.delete(conn.peer);closeAvatar(conn.peer);broadcast('left',{id:conn.peer});updatePeople();};conn.on('close',closed);watchRTC(conn,token,reason=>{status('Convidado não conectado: '+reason,true);if($('mp-modal').style.display==='flex')$('mp-modal-text').textContent=reason;closed();try{conn.close();}catch(e){}});conn.on('error',()=>{closed();try{conn.close();}catch(e){}});
- }
- function encodeChunk(data){const out=[];for(let i=0;i<data.length;){const value=data[i];let end=i+1;while(end<data.length&&data[end]===value&&end-i<65535)end++;out.push(value,end-i);i=end;}return out;}
- function decodeChunk(a){if(!Array.isArray(a)||a.length%2||a.length>256*H*2)throw Error('Dados de terreno inválidos.');const out=new Uint8Array(256*H);let at=0;for(let i=0;i<a.length;i+=2){const v=a[i],n=a[i+1];if(!Number.isInteger(v)||v<0||v>99||!Number.isInteger(n)||n<1||at+n>out.length)throw Error('Dados de terreno inválidos.');out.fill(v,at,at+n);at+=n;}if(at!==out.length)throw Error('Terreno incompleto.');return out;}
- function snapshot(){const state=ownState(performance.now()),chunks={},cx=Math.floor(P.x/16),cz=Math.floor(P.z/16);for(let x=-1;x<=1;x++)for(let z=-1;z<=1;z++){const k=(cx+x)+','+(cz+z);if(CD[k])chunks[k]=encodeChunk(CD[k]);}
-  return {format:VERSION,world:{name:aw.name,seed:SDX,df,cm:CM?1:0,mode:aw.mode||(aw.hardcore?'hardcore':CM?'creative':'survival'),hardcore:!!aw.hardcore,commands:!aw.hardcore&&aw.commands!==false},engineSeed:SEED,ed:EDC,es:EDS,void:VX.net.snapshot(),ch:CHST,bd:BD,dim:DIM,ret:RET,time:tm,overworldTime:tmO,spawn:state,chunks,mobs:MB.slice(0,80).map(m=>({t:m.t,x:m.x,y:m.y,z:m.z,hp:m.hp,yaw:m.g.rotation.y,skin:m.skin,key:m.key,home:m.home,guardKey:m.guardKey,caveGuard:m.caveGuard,spawnerKey:m.spawnerKey}))};
- }
- async function sendWorld(entry,token){const data=clone(snapshot());const s=data.spawn;for(const[dx,dz]of[[1.8,0],[-1.8,0],[0,1.8],[0,-1.8]]){const floor=gb(Math.floor(s.x+dx),Math.floor(s.y-.05),Math.floor(s.z+dz));if(floor&&![8,44,78,87,93,94,95,96].includes(floor)&&!cb(s.x+dx,s.y,s.z+dz,.6,1.8)){s.x+=dx;s.z+=dz;break;}}entry.spawn=s;const text=JSON.stringify(data);if(text.length>MAX_SNAPSHOT)throw Error('Este mundo excede o limite de transferência da sala (12 MB).');const count=Math.ceil(text.length/PART);message(entry.conn,'worldStart',{count,length:text.length});for(let i=0;i<count;i++){
-   if(token!==generation||!entry.conn.open||!peers.has(entry.conn.peer))return;
-   const waiting=performance.now();while((entry.conn.dataChannel?.bufferedAmount||0)>524288){if(token!==generation||!entry.conn.open)return;if(performance.now()-waiting>15000)throw Error('Conexão lenta durante a transferência. Tente novamente.');await delay(25);}
-   if(!message(entry.conn,'worldPart',{index:i,text:text.slice(i*PART,(i+1)*PART)}))throw Error('Transferência interrompida.');await delay(4);
-  }entry.sent=true;message(entry.conn,'worldEnd');
- }
- function sanitizeSlots(a,length){return Array.from({length},(_,i)=>{const s=a?.[i];if(!s||!Number.isInteger(s.id)||s.id<1||s.id>173)return null;const o={id:s.id,n:cl(s.n|0,1,64)};if([120,121,122].includes(s.coat)&&enMax(s.id))o.coat=s.coat;if(Number.isFinite(s.u))o.u=cl(s.u,0,100000);if(s.e&&typeof s.e==='object'){o.e={};for(const[k,v]of Object.entries(s.e))if(ENCHANTMENTS.definitions[k]&&Number.isInteger(v)&&v>0&&v<=5)o.e[k]=v;ENCHANTMENTS.sanitize(o);}return o;});}
- function parseChest(k){if(typeof k!=='string'||!/^([012]):(-?\d+),(-?\d+),(-?\d+)$/.test(k))return null;const[d,p]=k.split(':'),[x,y,z]=p.split(',').map(Number);return validBlock({x,y,z,dim:+d,id:0})?{x,y,z,dim:+d}:null;}
- function replace(obj,data){for(const key of Object.keys(obj))delete obj[key];for(const[key,value]of Object.entries(data||{}))if(key!=='__proto__'&&key!=='constructor'&&key!=='prototype')obj[key]=value;}
- function validEdits(data){const result={};if(!data||typeof data!=='object'||Array.isArray(data))return result;let count=0;for(const[k,values]of Object.entries(data)){if(!/^-?\d+,-?\d+$/.test(k)||!values||typeof values!=='object')continue;const out={};for(const[q,id]of Object.entries(values)){if(!/^-?\d+,-?\d+,-?\d+$/.test(q))continue;const[x,y,z]=q.split(',').map(Number);if(!validBlock({x,y,z,id,dim:0})||(x>>4)+','+(z>>4)!==k)continue;if(++count>350000)throw Error('Mundo contém edições demais para esta sala.');out[q]=id;}result[k]=out;}return result;}
- function validChests(data){const result={};for(const[k,a]of Object.entries(data||{}))if(parseChest(k)||k.startsWith('F')&&parseChest(k.slice(1))){if(Array.isArray(a))result[k]=sanitizeSlots(a,27);else if(k.startsWith('F')&&a&&typeof a==='object'){const o={};for(const key of ['i','f','o'])o[key]=sanitizeSlots([a[key]],1)[0];for(const key of ['b','bm','p'])o[key]=Number.isFinite(a[key])?cl(a[key],0,100000):0;result[k]=o;}}return result;}
- function restoreMob(s,types){
-  if(!s||!types.has(s.t)||![s.x,s.y,s.z,s.hp].every(Number.isFinite)||Math.hypot(s.x-P.x,s.z-P.z)>100||s.y< -512||s.y>4096||s.hp<=0)return;
-  const options={};if(s.skin&&Number.isInteger(s.skin.variant))options.skin={variant:cl(s.skin.variant,0,3),pattern:cl(s.skin.pattern|0,0,3)};
-  if(s.home&&[s.home.x,s.home.z].every(Number.isFinite))options.home={x:s.home.x,z:s.home.z};
-  if(s.caveGuard&&[s.caveGuard.x,s.caveGuard.y,s.caveGuard.z].every(Number.isFinite))options.caveGuard={x:s.caveGuard.x,y:s.caveGuard.y,z:s.caveGuard.z};
-  for(const key of ['guardKey','spawnerKey'])if(typeof s[key]==='string')options[key]=s[key].slice(0,160);
-  let m;if(s.t==='lev'){const count=MB.length;VX.spawnLev();if(MB.length>count){m=MB[MB.length-1];for(const seg of m.segs){seg.position.x+=s.x-m.x;seg.position.y+=s.y-m.y;seg.position.z+=s.z-m.z;}m.x=s.x;m.y=s.y;m.z=s.z;}}
-  else m=HOSTILES.definitions[s.t]?HOSTILES.spawn(s.t,s.x,s.y,s.z,options):spawn(s.t,s.x,s.y,s.z);
-  if(m){m.hp=cl(s.hp,.001,10000);m.g.rotation.y=Number.isFinite(s.yaw)?s.yaw:0;if(typeof s.key==='string'&&s.key.length<100)m.key=s.key;}
- }
- async function installWorld(data,token){if(!data||data.format!==VERSION||!data.world||!Number.isInteger(data.engineSeed)||!Number.isInteger(data.world.seed)||data.engineSeed!==1337+(data.world.seed|0)||!Number.isInteger(data.world.df)||data.world.df<0||data.world.df>3||data.dim<0||data.dim>2||!Number.isInteger(data.dim))throw Error('Este servidor usa um mundo incompatível.');const state=validState(data.spawn);if(!state||state.dim!==data.dim)throw Error('Posição inicial inválida.');
-  const ed=validEdits(data.ed),es=validEdits(data.es),ev=validEdits(data.void?.ev);const chunks=new Map();for(const[k,a]of Object.entries(data.chunks||{})){if(!/^-?\d+,-?\d+$/.test(k)||chunks.size>=9)continue;const[x,z]=k.split(',').map(Number);if(Math.abs(x-Math.floor(state.x/16))>2||Math.abs(z-Math.floor(state.z/16))>2)continue;chunks.set(k,decodeChunk(a));await delay(0);if(token!==generation)return;}
-  phase='joining';rebuilding=true;applied=true;run=0;aw={id:'guest-'+code,name:String(data.world.name||'Mundo compartilhado').slice(0,40),seed:data.world.seed|0,df:data.world.df,cm:data.world.cm?1:0,commands:!!data.world.commands,mode:String(data.world.mode||'survival'),hardcore:!!data.world.hardcore,dead:false};SK='vc_remote_'+code;SDX=aw.seed;SEED=data.engineSeed;df=aw.df;CM=!!aw.cm;GOD=0;CFL=CDN=FLY=0;RET=data.ret&&typeof data.ret==='object'?clone(data.ret):null;replace(EDC,ed);replace(EDS,es);replace(BD,data.bd||{});replace(CHST,validChests(data.ch));VX.net.restore({ev,st:data.void?.st,pg:data.void?.pg});replace(PC,{});WORLD_FEATURES.clearCaches();CAVE_WORLD.cache.clear();CAVE_WORLD.rewards.clear();window.MP_GROUND_RESET?.();window.MP_BED_RESET?.();inv.fill(null);EQ.fill(null);XP.xp=XP.lvl=0;P.hp=P.food=20;P.air=10;P.vy=P.vx=P.kx=P.kz=0;Object.keys(K).forEach(k=>K[k]=false);J.x=J.y=J.sp=0;pre(data.dim,state.x,state.y,state.z);P.yaw=state.yaw;P.pitch=state.pitch;P.fy=P.y;tm=Number.isFinite(data.time)?data.time:.12;tmO=Number.isFinite(data.overworldTime)?data.overworldTime:.12;for(const[k,a]of chunks)overrides.set(k,{dim:data.dim,data:a});
-  ui();CRT.sync();$('menu').style.display=$('wm').style.display=$('cfg').style.display='none';modal('Entrando no mundo','Preparando o terreno de '+aw.name+'…');$('mp-modal-close').hidden=true;
-  SPX=state.x;SPZ=state.z;const startTime=performance.now();while(token===generation){const cx=Math.floor(P.x/16),cz=Math.floor(P.z/16);let n=0;for(let x=-1;x<=1;x++)for(let z=-1;z<=1;z++)if(CH[(cx+x)+','+(cz+z)])n++;if(n===9)break;if(performance.now()-startTime>30000)throw Error('O terreno compartilhado não terminou de carregar.');await delay(40);}if(token!==generation)return;const types=new Set(['cow','pig','sheep','chicken','vil','zombie','skeleton','angel','bird','zephyr','boss','whale','moth','sentinel','bunny','jelly','manta','ram','gargoyle','storm','lev',...Object.keys(HOSTILES.definitions)]);for(const s of Array.isArray(data.mobs)?data.mobs.slice(0,80):[])restoreMob(s,types);rebuilding=false;message(connection,'ready',{state:ownState(performance.now())});
- }
- async function join(value,attempt=0){const room=parseCode(value);if(!room){status('Código inválido. Use 6 caracteres ou um link ?sala= / #sala=.',true);return;}if(role){status(role==='host'?'Feche seu mundo antes de entrar em outra sala.':'Você já está entrando ou conectado a uma sala.',true);return;}if(applied){status('Saia da sessão atual antes de entrar novamente.',true);return;}if(!ready){status('Aguarde o carregamento inicial do jogo.');return;}
-  if(started&&run){save();run=0;document.exitPointerLock?.();}localName=username($('mp-name').value||localName);$('mp-name').value=localName;try{localStorage.vcplayername=localName;}catch(e){}code=room;role='guest';phase='joining';joinedName='';const token=++generation;setTab('servers');$('mp-join-code').value=room;status('Conectando à sala '+code+'… Tentativa '+(attempt+1)+'/3');toggleUI();
-  let retrying=false;
-  function failure(reason,retry=true){if(token!==generation||retrying)return;retrying=true;if(retry&&!applied&&attempt<2){role=null;phase='idle';clean();role='guest';phase='joining';const nextToken=generation;status(reason+' Nova tentativa em '+(attempt+1)+' s…');toggleUI();timeout=setTimeout(()=>{if(nextToken!==generation||role!=='guest')return;role=null;phase='idle';join(room,attempt+1);},1000*(attempt+1));}else failGuest('Falha na conexão: '+reason);}
-  try{const PeerClass=await loadPeer();if(token!==generation||role!=='guest')return;peer=new PeerClass(peerOptions());const p=peer;let dialed=false;
-   timeout=setTimeout(()=>failure('Tempo esgotado ao receber o mundo.'),75000);
-   p.on('open',()=>{if(token!==generation)return;if(dialed){status(phase==='connected'?'Conectado · '+code:'Sinalização restabelecida. Recebendo mundo…');return;}dialed=true;status('Conectando ao anfitrião · '+code+'…');
-    try{connection=p.connect(roomID(code),{reliable:true,serialization:'json',metadata:{game:'VoxelCraft',version:VERSION}});}catch(e){failure(networkError(e,true));return;}const conn=connection;let received=Promise.resolve();
-    conn.on('open',()=>{if(token!==generation)return;if(!message(conn,'hello',{name:localName})){failure('Não foi possível iniciar a transferência.');return;}status('Conexão estabelecida. Recebendo o mundo…');});
-    conn.on('data',d=>{if(token!==generation)return;received=received.then(()=>{if(token===generation)return receive(d,token);}).catch(err=>failure(err.message||'Dados inválidos do servidor.',false));});
-    conn.on('close',()=>failure(phase==='connected'&&!conn.__routeFailed?'A conexão com o anfitrião foi encerrada.':routeMessage()));conn.on('error',e=>failure(networkError(e,true)));watchRTC(conn,token,reason=>failure(reason));
-   });p.on('error',e=>{if(token!==generation)return;if(phase==='connected'&&connection?.open&&['network','socket-error','server-error','socket-closed'].includes(e?.type)){status('Jogo conectado; restabelecendo sinalização…');return;}failure(networkError(e,true),!['browser-incompatible','invalid-id','invalid-key','ssl-unavailable'].includes(e?.type));});
-   recoverSignaling(p,token,()=>failure('O serviço de conexão ficou indisponível.'));
-   p.on('close',()=>failure('A conexão com a sala foi encerrada.'));
-  }catch(err){failure(err.message||'Não foi possível iniciar a conexão.');}
- }
- async function receive(d,token){if(role!=='guest'||!d||d.v!==VERSION)return;
-  if(d.type==='closed'||d.type==='rejected'){failGuest(String(d.reason||'O anfitrião fechou o mundo.').slice(0,180));return;}
-  if(d.type==='worldStart'){if(assembly||applied||!Number.isInteger(d.count)||d.count<1||d.count>Math.ceil(MAX_SNAPSHOT/PART)||!Number.isInteger(d.length)||d.length<1||d.length>MAX_SNAPSHOT||d.count!==Math.ceil(d.length/PART))throw Error('Transferência de mundo inválida.');assembly={parts:[],count:d.count,length:d.length,received:0};}
-  else if(d.type==='worldPart'){if(!assembly||typeof d.text!=='string'||d.text.length>PART||d.index!==assembly.received||d.index>=assembly.count)throw Error('Transferência interrompida ou inválida.');assembly.parts.push(d.text);assembly.received++;status('Recebendo mundo · '+Math.round(assembly.received/assembly.count*100)+'%');}
-  else if(d.type==='worldEnd'){if(!assembly||assembly.received!==assembly.count)throw Error('Transferência incompleta.');const text=assembly.parts.join('');if(text.length!==assembly.length)throw Error('Transferência incompleta.');assembly=null;await installWorld(JSON.parse(text),token);}
-  else if(d.type==='joined'&&applied&&rebuilding===false){clearTimeout(timeout);phase='connected';localName=username(d.name||localName);$('mp-name').value=localName;for(const p of Array.isArray(d.players)?d.players.slice(0,MAX_GUESTS):[])player(String(p.id),p.name,validState(p.state));for(const b of receiveBacklog)applyBlock(b);receiveBacklog=[];$('mp-modal').style.display='none';joinedName=aw.name;remember(code,joinedName);status('Conectado a '+aw.name+' · '+code);toggleUI();start();}
-  else if(d.type==='chat'&&phase==='connected')acceptChat(d.message);
-  else if(d.type==='chatHistory'&&phase==='connected'&&Array.isArray(d.messages))for(const record of d.messages.slice(-50))acceptChat(record,true);
-  else if(d.type==='player'&&typeof d.id==='string'&&d.id.length<100)player(d.id,d.name,validState(d.state));
-  else if(d.type==='left'&&typeof d.id==='string')closeAvatar(d.id);
-  else if(d.type==='blocks'&&Array.isArray(d.blocks)&&d.blocks.length<=8192){for(const b of d.blocks)if(validBlock(b)){if(!applied||rebuilding){if(receiveBacklog.length>8192)throw Error('Mundo mudou demais durante a entrada. Tente novamente.');receiveBacklog.push(b);}else applyBlock(b);}}
-  else if(d.type==='chests'&&applied){replace(CHST,validChests(d.ch));if(window.CHX)CHX.render();}
-  else if(d.type==='chest'&&typeof d.key==='string'){const values=validChests({[d.key]:d.value});if(values[d.key])CHST[d.key]=values[d.key];if(window.CHX)CHX.render();}
-  else if(d.type==='time'&&Number.isFinite(d.time)){tm=d.time;tmO=Number.isFinite(d.overworldTime)?d.overworldTime:tmO;}
- }
- function tick(now){syncChat();const dt=lastFrame?Math.min(.1,(now-lastFrame)/1000):0;lastFrame=now;if(!role)return;
-  if(phase==='connected'&&now-lastSend>=50){lastSend=now;const state=ownState(now);if(state){if(role==='host')broadcast('player',{id:peer.id,name:localName,state});else message(connection,'state',{state});}}
-  if(now-lastFlush>=50){lastFlush=now;if(role==='host'&&pendingBlocks.size){const blocks=[...pendingBlocks.values()];pendingBlocks.clear();for(let i=0;i<blocks.length;i+=128)broadcast('blocks',{blocks:blocks.slice(i,i+128)});}else if(role==='guest'&&phase==='connected'&&guestQueue.size){const blocks=[...guestQueue.values()];guestQueue.clear();for(let i=0;i<blocks.length;i+=128)message(connection,'blocks',{blocks:blocks.slice(i,i+128)});}}
-  if(role==='host'&&now-lastTime>1000){lastTime=now;broadcast('time',{time:tm,overworldTime:tmO});}
-  if(now-lastChest>250&&phase==='connected'){lastChest=now;if(role==='host'){for(const p of peers.values())if(p.ready&&p.chest&&CHST[p.chest])message(p.conn,'chest',{key:p.chest,value:clone(CHST[p.chest])});}}
-  for(const a of avatars.values()){const s=a.state;a.rig.root.visible=started&&s.dim===DIM;if(!a.rig.root.visible)continue;const t=cl((now-a.stamp)/100,0,1),p=a.previous,d=Math.hypot(s.x-p.x,s.y-p.y,s.z-p.z);a.rig.root.position.set(d>12?s.x:p.x+(s.x-p.x)*t,d>12?s.y:p.y+(s.y-p.y)*t,d>12?s.z:p.z+(s.z-p.z)*t);a.rig.update(s,dt);}
- }
-  // Session chat shares the established host connections, never a separate network.
- const CHAT_LIMIT=100,CHAT_LENGTH=240,chatLog=[],chatSeen=new Set(),chatNotices=new Map();
- let chatSerial=0,chatOpened=false,chatOwnLast=-Infinity,chatFocusTimer=null,chatUnread=0,chatUiKey='';
- function username(value,fallback='Jogador'){
-  if(typeof value!=='string')return fallback;
-  const clean=value.normalize('NFKC').replace(/[^\p{L}\p{M}\p{N} _.'-]/gu,'').replace(/\s+/g,' ').trim();
-  return Array.from(clean).slice(0,20).join('')||fallback;
- }
- function uniqueUsername(value){const wanted=username(value,'Convidado'),used=new Set([localName.toLocaleLowerCase(),...[...peers.values()].filter(p=>p.hello).map(p=>p.name.toLocaleLowerCase())]);let name=wanted,n=2;while(used.has(name.toLocaleLowerCase())){const suffix=' '+n++;name=Array.from(wanted).slice(0,20-suffix.length).join('')+suffix;}return name;}
- function chatText(value){if(typeof value!=='string'||value.length>4096)return '';return Array.from(value.replace(/[\u0000-\u001f\u007f-\u009f\u200b\u200e\u200f\u202a-\u202e\u2060-\u206f]/g,' ').replace(/\s+/g,' ').trim()).slice(0,CHAT_LENGTH).join('');}
- function chatActive(){return !!role&&phase==='connected'&&!!started;}
- function clearChatControls(){Object.keys(K).forEach(k=>K[k]=0);J.x=J.y=J.sp=0;jid=lid=null;atk=useD=useP=jump=bt=0;bk='';$('jb').style.display='none';$('jk').style.transform='';}
- function chatStatus(text){$('mp-chat-status').textContent=text;}
- function clearNotices(){for(const[node,timer]of chatNotices){clearTimeout(timer);node.remove();}chatNotices.clear();$('mp-chat-notices').textContent='';}
- function closeChat(relock=true){const open=chatOpened;chatOpened=false;clearTimeout(chatFocusTimer);chatFocusTimer=null;$('mp-chat-overlay').hidden=true;$('mp-chat-overlay').style.maxHeight='';$('mp-chat-overlay').style.top='';$('mp-chat-button').setAttribute('aria-expanded','false');if(open){$('mp-chat-input').blur();clearChatControls();}if(open&&relock&&chatActive()&&run&&P.hp>0&&$('cfg').style.display!=='flex'&&$('inv').style.display!=='flex')lock();}
- function syncChat(){const active=chatActive(),key=active+'|'+chatOpened+'|'+chatUnread;if(key===chatUiKey)return;chatUiKey=key;$('mp-chat-button').hidden=!active;$('mp-chat-notices').hidden=!active;$('mp-chat-send').disabled=!active;$('mp-chat-input').disabled=!active;if(!active)closeChat(false);$('mp-chat-badge').hidden=!chatUnread;$('mp-chat-badge').textContent=chatUnread>9?'9+':String(chatUnread);$('mp-chat-button').title=chatUnread?'Chat · '+chatUnread+' novas mensagens':'Chat multiplayer';}
- function resetChat(){closeChat(false);clearNotices();chatLog.length=0;chatSeen.clear();chatSerial=0;chatUnread=0;chatOwnLast=-Infinity;$('mp-chat-history').textContent='';$('mp-chat-empty').hidden=false;$('mp-chat-input').value='';chatStatus('');syncChat();}
- function layoutChat(){if(!chatOpened||!window.visualViewport)return;const view=window.visualViewport,panel=$('mp-chat-overlay'),rect=$('mp-chat-button').getBoundingClientRect(),offset=Number(view.offsetTop)||0,safe=Math.max(0,(Number(rect.top)||0)-48);let top=matchMedia('(max-height:430px)').matches?8+safe:Number.isFinite(rect.bottom)?rect.bottom+8:91+safe;if(view.height<top+160)top=8+safe;panel.style.top=(top+offset)+'px';panel.style.maxHeight=Math.max(140,view.height-top-12)+'px';}
- function openChat(){if(!chatActive())return;if(chatOpened){closeChat();return;}chatOpened=true;clearChatControls();chatUnread=0;clearNotices();$('mp-chat-overlay').hidden=false;$('mp-chat-button').setAttribute('aria-expanded','true');chatStatus('');syncChat();layoutChat();if(document.pointerLockElement)document.exitPointerLock?.();const token=generation;clearTimeout(chatFocusTimer);chatFocusTimer=setTimeout(()=>{chatFocusTimer=null;if(token!==generation||!chatOpened||!chatActive())return;const field=$('mp-chat-input');field.focus({preventScroll:true});layoutChat();$('mp-chat-history').scrollTop=$('mp-chat-history').scrollHeight;},40);}
- function toastChat(record){if(!chatActive()||chatOpened||record.sender===peer?.id)return;while(chatNotices.size>=3){const[node,timer]=chatNotices.entries().next().value;clearTimeout(timer);node.remove();chatNotices.delete(node);}const node=document.createElement('div');node.className='mp-chat-toast';node.textContent='['+record.name+']: '+record.text;$('mp-chat-notices').appendChild(node);const token=generation,timer=setTimeout(()=>{chatNotices.delete(node);if(token===generation)node.remove();},5500);chatNotices.set(node,timer);chatUnread=Math.min(99,chatUnread+1);syncChat();}
- function acceptChat(record,historical=false){if(!record||!Number.isSafeInteger(record.id)||record.id<1||typeof record.sender!=='string'||record.sender.length>100||typeof record.name!=='string')return;const text=chatText(record.text);if(!text||chatSeen.has(record.id))return;const clean={id:record.id,sender:record.sender,name:username(record.name),text};chatSeen.add(clean.id);chatLog.push(clean);if(chatLog.length>CHAT_LIMIT){const oldest=chatLog.shift();chatSeen.delete(oldest.id);$('mp-chat-history').firstElementChild?.remove();}const row=document.createElement('div');row.className='mp-chat-message';row.textContent='['+clean.name+']: '+clean.text;$('mp-chat-history').appendChild(row);$('mp-chat-empty').hidden=true;if(chatOpened)$('mp-chat-history').scrollTop=$('mp-chat-history').scrollHeight;if(!historical)toastChat(clean);}
- function hostChat(sender,name,text){const record={id:++chatSerial,sender,name,text};acceptChat(record);broadcast('chat',{message:record});}
- function sendChat(value){if(!chatActive()){chatStatus('Chat disponível apenas em uma sala conectada.');return false;}const text=chatText(value);if(!text){chatStatus('Digite uma mensagem.');return false;}const now=performance.now();if(now-chatOwnLast<650){chatStatus('Aguarde um instante antes de enviar novamente.');return false;}if(role==='guest'){if(!message(connection,'chatSend',{text})){chatStatus('Não foi possível enviar a mensagem.');return false;}}else hostChat(peer.id,localName,text);chatOwnLast=now;chatStatus('');return true;}
- function submitChat(){if(sendChat($('mp-chat-input').value)){$('mp-chat-input').value='';$('mp-chat-input').focus({preventScroll:true});}}
- function installChat(){
-  $('mp-chat-button').onclick=openChat;$('mp-chat-close').onclick=()=>closeChat();$('mp-chat-form').onsubmit=e=>{e.preventDefault();e.stopPropagation();submitChat();};
-  const keyboard=e=>{if(!chatOpened)return;e.stopImmediatePropagation();if(e.type!=='keydown')return;if(e.key==='Escape'){e.preventDefault();closeChat();}else if(e.key==='Enter'&&!e.isComposing&&e.keyCode!==229){e.preventDefault();if(!e.repeat)submitChat();}};
-  addEventListener('keydown',keyboard,true);addEventListener('keyup',keyboard,true);
-  // Stop legacy window input handlers without cancelling input focus/selection or scrolling.
-  const pointer=e=>{const target=e.target,button=target?.id==='mp-chat-button'||target?.closest?.('#mp-chat-button');if(chatOpened||button)e.stopImmediatePropagation();};
-  for(const type of ['mousedown','mouseup','mousemove','pointerdown','pointerup','pointermove','touchstart','touchmove','touchend','wheel','contextmenu'])addEventListener(type,pointer,{capture:true,passive:true});
-  window.visualViewport?.addEventListener('resize',layoutChat);window.visualViewport?.addEventListener('scroll',layoutChat);addEventListener('resize',layoutChat);
-  const startBeforeChat=start;start=function(...args){const result=startBeforeChat(...args);syncChat();return result;};
-  const pauseBeforeChat=$('gear').onclick;$('gear').onclick=function(...args){closeChat(false);return pauseBeforeChat.apply(this,args);};
-  const dieBeforeChat=die;die=function(...args){closeChat(false);return dieBeforeChat(...args);};
-  resetChat();
- }
-
- function install(){if(installed)return;installed=true;localName=username(localName);installChat();installRelay();$('mp-name').value=localName;$('mp-tab-worlds').onclick=()=>setTab('worlds');$('mp-tab-servers').onclick=()=>setTab('servers');$('mp-join').onclick=()=>join($('mp-join-code').value);$('mp-join-code').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();join($('mp-join-code').value);}});$('mp-cancel').onclick=cancelJoin;$('mp-host').onclick=()=>role==='guest'?leave():openHost();$('mp-session-info').onclick=()=>{if(role==='host')modal('Seu mundo está aberto','Compartilhe o código ou link com seus convidados.',true);else if(role==='guest')modal('Conectado à sala '+code,'Mundo: '+(joinedName||'recebendo…'));};$('mp-session-leave').onclick=leave;$('mp-modal-close').onclick=()=>$('mp-modal').style.display='none';$('mp-copy').onclick=copyLink;$('mp-close-world').onclick=()=>stopHost();$('mp-return').onclick=leave;
-  const play=$('mj').onclick;$('mj').onclick=function(...a){play.apply(this,a);setTab('worlds');};const sync=syncUI;syncUI=function(...a){const result=sync.apply(this,a);toggleUI();return result;};const exit=$('csx').onclick;$('csx').onclick=function(...a){if(role==='guest'||applied){leave();return;}if(role==='host')stopHost();return exit.apply(this,a);};setTab('worlds');toggleUI();
- }
- const originalInit=initializeWorld;initializeWorld=function(...args){const result=originalInit(...args);install();return result;};
- const originalFinish=BOOT.finish;BOOT.finish=function(){originalFinish.call(BOOT);ready=true;const auto=parseCode(location.href);if(auto){$('mj').onclick();setTab('servers');$('mp-join-code').value=auto;setTimeout(()=>join(auto),950);}};
- const originalSave=save;save=function(...args){if(role==='guest'||applied)return;return originalSave(...args);};
- const originalChest=chB;chB=function(x,y,z,id){if(!remoteEdit)return originalChest(x,y,z,id);const k=DIM+':'+x+','+y+','+z,o=gb(x,y,z);if((id===34||id===35)&&!CHST[k])CHST[k]=Array(27).fill(null);else if(!id&&(o===34||o===35))delete CHST[k];if((id===71||id===72)&&!CHST['F'+k])CHST['F'+k]={i:null,f:null,o:null,b:0,bm:1,p:0};else if(o===71||o===72)if(id!==71&&id!==72)delete CHST['F'+k];};
- const originalGenTask=genC.task;genC.task=function*(cx,cz){yield* originalGenTask(cx,cz);const k=cx+','+cz,o=overrides.get(k);if(o&&o.dim===DIM){CD[k]=o.data;overrides.delete(k);lk=null;CAVE_WORLD.index(cx,cz);}};
- const originalGen=genC;genC=Object.assign(function(cx,cz){const result=originalGen(cx,cz),k=cx+','+cz,o=overrides.get(k);if(o&&o.dim===DIM){CD[k]=o.data;overrides.delete(k);lk=null;CAVE_WORLD.index(cx,cz);}return result;},{task:genC.task});
- const originalRender=R.render.bind(R);R.render=function(...args){tick(performance.now());return originalRender(...args);};
- const originalDie=die;die=function(...args){if(role==='guest'&&aw.hardcore){failGuest('Você morreu no Hardcore. Sua participação nesta sala foi encerrada.');return;}if(role==='host'&&aw.hardcore)stopHost('O anfitrião morreu no Hardcore. O mundo foi fechado.');return originalDie(...args);};
- addEventListener('beforeunload',()=>{if(role==='host')stopHost('O anfitrião saiu do jogo.');else if(role==='guest')message(connection,'leave');});
- return {install,join,openHost,stopHost,leave,cancelJoin,parseCode,setTab,tick,snapshot,chat:{open:openChat,close:closeChat,send:sendChat,get state(){return {active:chatActive(),open:chatOpened,unread:chatUnread,name:localName,history:chatLog.map(m=>({...m}))};}},get isGuest(){return role==='guest'||applied;},get rebuilding(){return rebuilding;},get remoteEdit(){return remoteEdit;},blockChange(x,y,z,id){if(!remoteEdit&&(role==='host'||role==='guest'&&phase==='connected'))changed({x,y,z,id,dim:DIM});},fluidChange(x,y,z,id){if(role==='host'&&!remoteEdit)changed({x,y,z,id,dim:DIM});},chestOpen(key){if(role==='guest'&&phase==='connected')message(connection,'chestOpen',{key});},chestEdit(key,value){if(role==='guest'&&phase==='connected')message(connection,'chestEdit',{key,value:clone(value)});else if(role==='host')broadcast('chest',{key,value:clone(value)});},get state(){return{role,phase,code,guests:[...peers.values()].filter(p=>p.ready).length,players:avatars.size,applied,ready};}};
-})();
-window.MULTIPLAYER=MULTIPLAYER;
-
-</script>
-<script>
 // Forge inventory view: input reservations remain in the saved inventory until the atomic craft.
 (()=>{
 const ores=[120,121,122],eligible=s=>!!s&&enMax(s.id)>0&&['armor','weapon','tool'].includes(ENCHANTMENTS.category(s.id));
@@ -3684,7 +3380,7 @@ function ref(el){const b=el?.closest?.('[data-forge]');if(!b||!ov.contains(b))re
 function click(r){if(!r)return;if(r.type==='output'){apply();return;}if(picked){if(same(picked,r)){if(r.type==='inv'){const s=view(r.i);if(reserve(r.i,ores.includes(s?.id)?'material':'base'))return;}picked=null;draw();return;}if(move(picked,r))return;}picked=itemAt(r)?r:null;draw();}
 function clearDrag(){ghost?.remove();ghost=null;drag=null;}
 function close(){if(!opened)return;opened=false;clearDrag();picked=null;base=material=-1;baseRef=materialRef=null;ov.style.display='none';resetInput();ui();save();if(run&&P.hp>0&&$('cfg').style.display!=='flex')lock();}
-function open(r){if(!run||!r||r.b!==69)return false;pos={x:r.x,y:r.y,z:r.z,dim:DIM};if(!available())return false;window.MULTIPLAYER?.chat.close();window.CHX?.close();opened=true;base=material=-1;baseRef=materialRef=null;picked=null;resetInput();document.exitPointerLock?.();ov.style.display='flex';draw();$('forge-close').focus();return true;}
+function open(r){if(!run||!r||r.b!==69)return false;pos={x:r.x,y:r.y,z:r.z,dim:DIM};if(!available())return false;window.CHX?.close();opened=true;base=material=-1;baseRef=materialRef=null;picked=null;resetInput();document.exitPointerLock?.();ov.style.display='flex';draw();$('forge-close').focus();return true;}
 $('forge-close').onclick=close;
 ov.addEventListener('click',e=>{if(performance.now()<suppressClickUntil)return;click(ref(e.target));});
 ov.addEventListener('pointerdown',e=>{if(e.button!=null&&e.button!==0)return;const r=ref(e.target);if(r&&itemAt(r))drag={source:r,id:e.pointerId,x:e.clientX,y:e.clientY,moved:false};});
