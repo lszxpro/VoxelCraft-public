@@ -6,4 +6,6 @@ modflix is an site inspired in modrinth for everyone to search by minecraft java
 
 universal ai is a client that is open source and u can run it locally to attach your api keys and use the models with a basic interface and low ram usage, u dont run the models locally, only the website itself. it uses between 20-40mb of ram and please dont try to run it by the github page, it wont work.
 
-VoxelCraft is my first project, a mobile and desktop html based game that is inspired in minecraft, but free with other things and dont need that much of a good hardware, it can easily run on most of mobile phones with shaders and textures turnt on at 8 chunks. 
+VoxelCraft is my first project, a mobile and desktop html based game that is inspired in minecraft, but free with other things and dont need that much of a good hardware, it can easily run on most of mobile phones with shaders and textures turnt on at 8 chunks.
+
+iframe is mostly for acessing websites from another way, idk why i did it and some websites cant be acessed by it.
