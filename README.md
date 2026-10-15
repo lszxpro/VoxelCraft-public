@@ -1,4 +1,4 @@
-# here is my directory, there is some projects that i made for fun
+# here is my repository, there is some projects that i made for fun
 u can find the existing online projects in https://lszxpro.github.io/VoxelCraft-public/ and the projects that are in /runlocal/ are the ones that u have to download to run it
 (every project here except  voxelcraft needs internet/wifi (voxelcraft needs wifi in the first time opening it)
 
