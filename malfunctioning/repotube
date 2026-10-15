@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Repos - Estilo YouTube</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Roboto, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0f0f0f;
+            color: #fff;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #0f0f0f;
+            z-index: 100;
+            border-bottom: 1px solid #222;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: -1px;
+            cursor: pointer;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            width: 50%;
+            max-width: 600px;
+        }
+
+        .search-container input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #303030;
+            border-right: none;
+            border-radius: 40px 0 0 40px;
+            background-color: #121212;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-container input:focus {
+            border-color: #1c62b9;
+        }
+
+        .search-container button {
+            padding: 10px 20px;
+            border: 1px solid #303030;
+            border-radius: 0 40px 40px 0;
+            background-color: #222;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .search-container button:hover {
+            background-color: #303030;
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .thumbnail {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            border-radius: 12px;
+            background-color: #202020;
+            margin-bottom: 12px;
+        }
+
+        .card-info {
+            display: flex;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .text-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .text-info h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #f1f1f1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .text-info p {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 2px;
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 20px;
+            color: #aaa;
+            font-size: 16px;
+            width: 100%;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="goHome()">RepoTube</div>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Pesquisar repositórios (ex: llm, airllm...)">
+            <button id="searchBtn">🔍</button>
+        </div>
+        <div style="width: 50px;"></div>
+    </header>
+
+    <main id="repoGrid"></main>
+    <div id="statusMessage" class="status-message">Carregando repositórios...</div>
+
+    <script>
+        let currentPage = 1;
+        let currentQuery = '';
+        let isFetching = false;
+        let hasMore = true;
+
+        const grid = document.getElementById('repoGrid');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const statusMessage = document.getElementById('statusMessage');
+
+        function goHome() {
+            searchInput.value = '';
+            currentQuery = '';
+            currentPage = 1;
+            hasMore = true;
+            grid.innerHTML = '';
+            fetchRepos();
+        }
+
+        async function fetchRepos() {
+            if (isFetching || !hasMore) return;
+            
+            // O GitHub só permite até 1000 resultados na API de busca (50 páginas de 20)
+            if (currentPage > 50) {
+                hasMore = false;
+                statusMessage.style.display = 'block';
+                statusMessage.innerText = 'Fim da linha! O GitHub só libera os primeiros 1000 resultados.';
+                return;
+            }
+
+            isFetching = true;
+            statusMessage.style.display = 'block';
+            statusMessage.innerText = 'Carregando repositórios...';
+
+            try {
+                let url = '';
+                if (currentQuery === '') {
+                    // Tela inicial: Os mais populares do mundo (ordenados por estrelas)
+                    url = `https://api.github.com/search/repositories?q=stars:>10000&sort=stars&order=desc&page=${currentPage}&per_page=20`;
+                } else {
+                    // Pesquisa: Usa o sistema de relevância do próprio GitHub para resultados precisos
+                    url = `https://api.github.com/search/repositories?q=${encodeURIComponent(currentQuery)}&page=${currentPage}&per_page=20`;
+                }
+
+                const response = await fetch(url);
+                
+                // Tratando o bloqueio temporário do GitHub (Rate Limit)
+                if (response.status === 403) {
+                    hasMore = false;
+                    statusMessage.innerText = 'Opa! O GitHub bloqueou temporariamente (muitas requisições rápidas). Espere 1 minuto e tente pesquisar de novo.';
+                    isFetching = false;
+                    return;
+                }
+
+                const data = await response.json();
+                
+                if (data.items && data.items.length > 0) {
+                    renderRepos(data.items);
+                    statusMessage.style.display = 'none';
+                    
+                    // Se a página atual já carregou todos os itens disponíveis, para de tentar puxar mais
+                    if (currentPage * 20 >= data.total_count) {
+                        hasMore = false;
+                        statusMessage.style.display = 'block';
+                        statusMessage.innerText = 'Todos os resultados foram carregados.';
+                    }
+                } else {
+                    hasMore = false;
+                    if (currentPage === 1) {
+                        statusMessage.innerText = 'Nenhum repositório encontrado com esse nome.';
+                    } else {
+                        statusMessage.innerText = 'Fim dos resultados.';
+                    }
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                statusMessage.innerText = 'Erro ao carregar dados. Verifique a internet.';
+            }
+
+            isFetching = false;
+        }
+
+        function renderRepos(repos) {
+            repos.forEach(repo => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => window.open(repo.html_url, '_blank');
+
+                const stars = repo.stargazers_count > 999 
+                    ? (repo.stargazers_count / 1000).toFixed(1) + 'k' 
+                    : repo.stargazers_count;
+                
+                const lang = repo.language ? repo.language : 'Desconhecido';
+                
+                // Pega a descrição e limita o tamanho pra não quebrar o layout
+                const desc = repo.description ? repo.description.substring(0, 80) + '...' : 'Sem descrição';
+
+                card.innerHTML = `
+                    <img src="${repo.owner.avatar_url}" alt="Thumbnail" class="thumbnail">
+                    <div class="card-info">
+                        <img src="${repo.owner.avatar_url}" alt="Avatar" class="avatar">
+                        <div class="text-info">
+                            <h3>${repo.full_name}</h3>
+                            <p>${desc}</p>
+                            <p style="margin-top: 4px;">⭐ ${stars} estrelas • 💻 ${lang}</p>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function handleSearch() {
+            const val = searchInput.value.trim();
+            currentQuery = val;
+            currentPage = 1;
+            hasMore = true;
+            grid.innerHTML = ''; 
+            fetchRepos();
+        }
+
+        searchBtn.addEventListener('click', handleSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSearch();
+        });
+
+        window.addEventListener('scroll', () => {
+            // Se chegou perto do fim da página e não tá carregando
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 800) {
+                if (!isFetching && hasMore) {
+                    currentPage++;
+                    fetchRepos();
+                }
+            }
+        });
+
+        // Carrega inicial
+        fetchRepos();
+    </script>
+</body>
+</html>
