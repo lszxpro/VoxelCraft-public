@@ -1,6 +1,6 @@
 # here is my repository, there is some projects that i made for fun
 u can find the existing online projects in https://lszxpro.github.io/VoxelCraft-public/ and the projects that are in /runlocal/ are the ones that u have to download to run it
-(every project here except  voxelcraft needs internet/wifi (voxelcraft needs wifi in the first time opening it) and (every project here can be run by downloading it too)
+i made this to make some alternatives to the existing apps and all of them without having to log in or be made by big companies
 
 modflix is an site inspired in modrinth for everyone to search by minecraft java mods just by searching like modrinth, but it is open source and dont use that many ram ( uses 20-50mbs of ram ), it is perfect for those that uses an alternative browser or iframe or have low amount of ram and want to do multitasking ( more than one site opened on the browser ), it uses 3-5 times less ram than the mods sites that are popular.
 
