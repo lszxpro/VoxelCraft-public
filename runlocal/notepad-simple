@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloco de Notas</title>
+    <style>
+        :root {
+            --bg-app: #0f0f13;
+            --bg-card: #18181b;
+            --text-main: #fafafa;
+            --text-muted: #71717a;
+            --accent: #8b5cf6;
+            --danger: #ef4444;
+            --border: #27272a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .notepad-container {
+            width: 100%;
+            max-width: 700px;
+            height: 85vh;
+            max-height: 800px;
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Cabeçalho */
+        header {
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            background-color: rgba(24, 24, 27, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .status {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .status.visible {
+            opacity: 1;
+        }
+
+        button {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            background-color: var(--border);
+            color: var(--text-main);
+        }
+
+        button.danger:hover {
+            background-color: rgba(239, 68, 68, 0.15);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* Área de Texto */
+        textarea {
+            flex-grow: 1;
+            width: 100%;
+            padding: 24px;
+            background-color: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 1rem;
+            line-height: 1.7;
+            resize: none;
+            outline: none;
+            font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+        }
+
+        textarea::placeholder {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        /* Rodapé */
+        footer {
+            padding: 10px 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background-color: rgba(24, 24, 27, 0.5);
+        }
+
+        /* Scrollbar customizada */
+        textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            body { padding: 0; }
+            .notepad-container { 
+                height: 100vh; 
+                max-height: none; 
+                border-radius: 0; 
+                border: none; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="notepad-container">
+    <header>
+        <h1>📝 Bloco de Notas</h1>
+        <div class="header-actions">
+            <span class="status" id="saveStatus">Salvo ✓</span>
+            <button onclick="copiarTexto()" title="Copiar tudo">📋 Copiar</button>
+            <button class="danger" onclick="limparTudo()" title="Apagar tudo">🗑️ Limpar</button>
+        </div>
+    </header>
+
+    <textarea 
+        id="noteArea" 
+        placeholder="Comece a digitar suas notas aqui..."
+        spellcheck="false"
+    ></textarea>
+
+    <footer>
+        <span id="charCount">0 caracteres</span>
+        <span id="wordCount">0 palavras</span>
+    </footer>
+</div>
+
+<script>
+    const noteArea = document.getElementById('noteArea');
+    const saveStatus = document.getElementById('saveStatus');
+    const charCount = document.getElementById('charCount');
+    const wordCount = document.getElementById('wordCount');
+    
+    let saveTimeout;
+
+    // Carregar notas salvas ao iniciar
+    function carregarNotas() {
+        const notasSalvas = localStorage.getItem('meu_bloco_de_notas');
+        if (notasSalvas) {
+            noteArea.value = notasSalvas;
+        }
+        atualizarContadores();
+    }
+
+    // Salvar notas automaticamente com um pequeno atraso (debounce)
+    function salvarNotas() {
+        // Mostra o status de salvando
+        saveStatus.textContent = 'Salvando...';
+        saveStatus.classList.add('visible');
+
+        clearTimeout(saveTimeout);
+        
+        saveTimeout = setTimeout(() => {
+            localStorage.setItem('meu_bloco_de_notas', noteArea.value);
+            
+            // Atualiza para salvo e esconde depois de 2 segundos
+            saveStatus.textContent = 'Salvo ✓';
+            setTimeout(() => {
+                saveStatus.classList.remove('visible');
+            }, 2000);
+        }, 500); // Espera 500ms após parar de digitar para salvar
+    }
+
+    // Atualizar contagem de caracteres e palavras
+    function atualizarContadores() {
+        const texto = noteArea.value;
+        
+        // Caracteres
+        charCount.textContent = `${texto.length} caractere${texto.length !== 1 ? 's' : ''}`;
+        
+        // Palavras (ignora espaços vazios)
+        const palavras = texto.trim() === '' ? 0 : texto.trim().split(/\s+/).length;
+        wordCount.textContent = `${palavras} palavra${palavras !== 1 ? 's' : ''}`;
+    }
+
+    // Copiar texto para área de transferência
+    function copiarTexto() {
+        if (!noteArea.value) return;
+        
+        navigator.clipboard.writeText(noteArea.value).then(() => {
+            const btn = event.target.closest('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Copiado!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 1500);
+        });
+    }
+
+    // Limpar tudo
+    function limparTudo() {
+        if (noteArea.value.trim() === '') return;
+        
+        if (confirm('Tem certeza que deseja apagar todas as notas?')) {
+            noteArea.value = '';
+            localStorage.removeItem('meu_bloco_de_notas');
+            atualizarContadores();
+            
+            saveStatus.textContent = 'Apagado';
+            saveStatus.classList.add('visible');
+            setTimeout(() => saveStatus.classList.remove('visible'), 2000);
+        }
+    }
+
+    // Eventos
+    noteArea.addEventListener('input', () => {
+        salvarNotas();
+        atualizarContadores();
+    });
+
+    // Suporte a Tab dentro do textarea (para indentação)
+    noteArea.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const start = noteArea.selectionStart;
+            const end = noteArea.selectionEnd;
+            
+            noteArea.value = noteArea.value.substring(0, start) + '    ' + noteArea.value.substring(end);
+            noteArea.selectionStart = noteArea.selectionEnd = start + 4;
+            
+            salvarNotas();
+        }
+    });
+
+    // Iniciar
+    window.onload = carregarNotas;
+</script>
+
+</body>
+</html>
