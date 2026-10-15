@@ -238,7 +238,7 @@
             opacity: 0.5;
         }
 
-        /* Locked Screen Overlay */
+        /* Lock Screen Overlay */
         .lock-overlay {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -314,11 +314,11 @@
 
         <textarea id="noteArea" placeholder="Start typing your note here..." spellcheck="false" oninput="handleContentChange()"></textarea>
 
-        <!-- Lock Screen Overlay (Hidden by default) -->
+        <!-- Lock Screen Overlay -->
         <div class="lock-overlay" id="lockOverlay" style="display: none;">
             <h3>🔒 Password Protected</h3>
             <p style="font-size: 0.85rem; color: var(--text-muted);">Enter password to view this note</p>
-            <input type="password" id="passwordAttempt" placeholder="Enter password">
+            <input type="password" id="passwordAttempt" placeholder="Enter password" onkeydown="if(event.key==='Enter') unlockNote()">
             <button class="primary" onclick="unlockNote()">Unlock Note</button>
         </div>
 
@@ -362,6 +362,9 @@
     }
 
     function createNewNote() {
+        // Se a nota ativa atual for protegida, tranca ela ao mudar
+        lockActiveNoteIfNeeded();
+
         const newNote = {
             id: Date.now().toString(),
             title: 'Untitled Note',
@@ -375,7 +378,19 @@
         selectNote(newNote.id);
     }
 
+    function lockActiveNoteIfNeeded() {
+        if (!activeNoteId) return;
+        const currentNote = notes.find(n => n.id === activeNoteId);
+        if (currentNote && currentNote.password) {
+            currentNote.unlocked = false; // Tranca automaticamente ao sair
+        }
+    }
+
     function selectNote(id) {
+        if (activeNoteId && activeNoteId !== id) {
+            lockActiveNoteIfNeeded();
+        }
+
         activeNoteId = id;
         const note = notes.find(n => n.id === id);
         if (!note) return;
@@ -383,17 +398,24 @@
         renderNotesList();
 
         noteTitleEl.value = note.title;
-        noteAreaEl.value = note.content;
-        updateCounters();
 
+        // ESCONDE O CONTEÚDO REAL SE A NOTA ESTIVER TRANCADA
         if (note.password && !note.unlocked) {
+            noteAreaEl.value = ''; // Limpa o textarea para não vazar texto
+            noteAreaEl.disabled = true;
+            noteTitleEl.disabled = true;
             lockOverlayEl.style.display = 'flex';
             passwordAttemptEl.value = '';
+            passwordAttemptEl.focus();
         } else {
+            noteAreaEl.value = note.content;
+            noteAreaEl.disabled = false;
+            noteTitleEl.disabled = false;
             lockOverlayEl.style.display = 'none';
         }
 
-        lockBtnEl.innerHTML = note.password ? '🔓 Unlock' : '🔒 Lock';
+        updateCounters();
+        lockBtnEl.innerHTML = note.password ? '🔓 Remove Password' : '🔒 Set Password';
     }
 
     function renderNotesList() {
@@ -401,7 +423,8 @@
         notesListEl.innerHTML = '';
 
         const filtered = notes.filter(n => 
-            n.title.toLowerCase().includes(query) || n.content.toLowerCase().includes(query)
+            n.title.toLowerCase().includes(query) || 
+            (n.unlocked && n.content.toLowerCase().includes(query))
         );
 
         filtered.forEach(note => {
@@ -410,7 +433,7 @@
             item.onclick = () => selectNote(note.id);
 
             const isLocked = note.password && !note.unlocked;
-            const previewText = isLocked ? 'Protected Note' : (note.content || 'Empty note...');
+            const previewText = isLocked ? '🔒 Protected Note (Locked)' : (note.content || 'Empty note...');
 
             item.innerHTML = `
                 <div class="note-item-title">
@@ -425,7 +448,7 @@
 
     function handleContentChange() {
         const note = notes.find(n => n.id === activeNoteId);
-        if (!note) return;
+        if (!note || (note.password && !note.unlocked)) return;
 
         note.title = noteTitleEl.value || 'Untitled Note';
         note.content = noteAreaEl.value;
@@ -434,7 +457,6 @@
         updateCounters();
         renderNotesList();
 
-        // Auto-save debounce
         saveStatusEl.textContent = 'Saving...';
         saveStatusEl.classList.add('visible');
 
@@ -486,10 +508,15 @@
 
         if (passwordAttemptEl.value === note.password) {
             note.unlocked = true;
+            noteAreaEl.value = note.content; // Restaura o conteúdo na tela
+            noteAreaEl.disabled = false;
+            noteTitleEl.disabled = false;
             lockOverlayEl.style.display = 'none';
+            updateCounters();
             renderNotesList();
         } else {
             alert('Incorrect password!');
+            passwordAttemptEl.value = '';
         }
     }
 
@@ -509,7 +536,9 @@
     }
 
     function copyContent() {
-        if (!noteAreaEl.value) return;
+        const note = notes.find(n => n.id === activeNoteId);
+        if (!note || (note.password && !note.unlocked) || !noteAreaEl.value) return;
+
         navigator.clipboard.writeText(noteAreaEl.value).then(() => {
             const btn = event.target.closest('button');
             const original = btn.innerHTML;
@@ -518,7 +547,6 @@
         });
     }
 
-    // Support Tab key for indentation
     noteAreaEl.addEventListener('keydown', (e) => {
         if (e.key === 'Tab') {
             e.preventDefault();
