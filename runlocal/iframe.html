@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Iframe</title>
+    <style>
+        :root {
+            --bg-app: #0f0f13;
+            --bg-header: #18181b;
+            --bg-input: #27272a;
+            --text-main: #fafafa;
+            --text-muted: #a1a1aa;
+            --accent: #8b5cf6;
+            --accent-hover: #7c3aed;
+            --border: #3f3f46;
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- CABEÇALHO / BARRA DE NAVEGAÇÃO --- */
+        .nav-bar {
+            background-color: var(--bg-header);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        /* Grupo de Input da URL */
+        .url-group {
+            flex-grow: 1;
+            display: flex;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .url-group:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+
+        .url-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 20px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .url-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .btn-go {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0 24px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-go:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Botões de Ação Extras */
+        .action-btn {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background-color: var(--border);
+            color: var(--text-main);
+        }
+
+        /* --- ÁREA DO IFRAME --- */
+        .iframe-container {
+            flex-grow: 1;
+            position: relative;
+            background-color: #ffffff; /* Fundo branco para sites carregados não ficarem transparentes */
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* Tela de Boas-vindas (quando não há URL) */
+        .empty-state {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--bg-app);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 20px;
+            transition: opacity 0.3s ease;
+        }
+
+        .empty-state.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h2 {
+            color: var(--text-main);
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .empty-state p {
+            max-width: 400px;
+            line-height: 1.6;
+        }
+
+        /* Aviso de bloqueio */
+        .warning-banner {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(239, 68, 68, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            display: none;
+            z-index: 5;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            .logo span { display: none; } /* Esconde o texto do logo no mobile */
+            .btn-go span { display: none; } /* Esconde o texto do botão no mobile */
+            .btn-go { padding: 0 15px; }
+            .nav-bar { padding: 12px; gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra Superior -->
+    <div class="nav-bar">
+        <div class="logo">
+            🌐 <span>WebViewer</span>
+        </div>
+        
+        <div class="url-group">
+            <input 
+                type="text" 
+                id="urlInput" 
+                class="url-input" 
+                placeholder="Digite ou cole uma URL aqui (ex: https://example.com)" 
+                autocomplete="off"
+                spellcheck="false"
+            >
+            <button class="btn-go" onclick="carregarIframe()" title="Carregar página">
+                ▶️ <span>Ir</span>
+            </button>
+        </div>
+
+        <button class="action-btn" onclick="recarregar()" title="Recarregar">🔄</button>
+        <button class="action-btn" onclick="abrirNovaAba()" title="Abrir em nova aba">↗️</button>
+    </div>
+
+    <!-- Área de Conteúdo -->
+    <div class="iframe-container">
+        <!-- Mensagem inicial -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">🖥️</div>
+            <h2>Nenhuma página carregada</h2>
+            <p>Digite um endereço URL na barra superior e clique em "Ir" para visualizar o site aqui dentro.</p>
+        </div>
+
+        <!-- O Iframe -->
+        <iframe id="meuIframe" src="about:blank" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+
+        <!-- Banner de aviso caso o site bloqueie -->
+        <div class="warning-banner" id="warningBanner">
+            ⚠️ Este site pode ter bloqueado a exibição em iframes por segurança.
+        </div>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('urlInput');
+        const meuIframe = document.getElementById('meuIframe');
+        const emptyState = document.getElementById('emptyState');
+        const warningBanner = document.getElementById('warningBanner');
+
+        // Função principal para carregar a URL
+        function carregarIframe() {
+            let url = urlInput.value.trim();
+
+            if (!url) {
+                alert('Por favor, insira uma URL.');
+                return;
+            }
+
+            // Adiciona https:// automaticamente se o usuário esqueceu
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+                urlInput.value = url; // Atualiza o input visualmente
+            }
+
+            // Esconde a tela de boas-vindas
+            emptyState.classList.add('hidden');
+            warningBanner.style.display = 'none';
+
+            // Carrega o iframe
+            meuIframe.src = url;
+
+            // Tenta detectar erros de carregamento (limitação de cross-origin)
+            meuIframe.onload = () => {
+                try {
+                    // Se conseguir acessar, o site permitiu
+                    let test = meuIframe.contentWindow.document;
+                } catch (e) {
+                    // Se der erro de CORS, significa que carregou, mas é protegido
+                    // Isso é normal na maioria dos sites grandes
+                }
+            };
+
+            meuIframe.onerror = () => {
+                warningBanner.style.display = 'block';
+            };
+        }
+
+        // Recarregar o iframe atual
+        function recarregar() {
+            if (meuIframe.src && meuIframe.src !== 'about:blank') {
+                meuIframe.src = meuIframe.src;
+            }
+        }
+
+        // Abrir a URL digitada em uma nova aba real
+        function abrirNovaAba() {
+            let url = urlInput.value.trim();
+            if (url) {
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                }
+                window.open(url, '_blank');
+            }
+        }
+
+        // Permite apertar "Enter" no teclado para carregar
+        urlInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                carregarIframe();
+            }
+        });
+
+        // Foca no input ao carregar a página
+        window.onload = () => {
+            urlInput.focus();
+        };
+    </script>
+</body>
+</html>
