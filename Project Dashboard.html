@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Projects Dashboard & Gallery</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        github: {
+                            bg: '#0d1117',
+                            card: '#161b22',
+                            subcard: '#21262d',
+                            border: '#30363d',
+                            accent: '#58a6ff',
+                            purple: '#bc8cff',
+                            green: '#3fb950',
+                            orange: '#d29922',
+                            red: '#f85149',
+                            muted: '#8b949e',
+                            text: '#c9d1d9'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Inter & Lucide Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #484f58;
+        }
+
+        .glass-panel {
+            background: rgba(22, 27, 34, 0.85);
+            backdrop-filter: blur(12px);
+        }
+
+        /* Extended Gradient presets for card covers */
+        .cover-gradient-1 { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%); }
+        .cover-gradient-2 { background: linear-gradient(135deg, #064e3b 0%, #022c22 50%, #0f172a 100%); }
+        .cover-gradient-3 { background: linear-gradient(135deg, #431407 0%, #1c1917 50%, #0f172a 100%); }
+        .cover-gradient-4 { background: linear-gradient(135deg, #1e1b4b 0%, #1e3a8a 50%, #0f172a 100%); }
+        .cover-gradient-5 { background: linear-gradient(135deg, #312e81 0%, #4c1d95 50%, #1e1035 100%); }
+        .cover-gradient-6 { background: linear-gradient(135deg, #831843 0%, #500724 50%, #0f172a 100%); }
+        .cover-gradient-7 { background: linear-gradient(135deg, #134e4a 0%, #065f46 50%, #022c22 100%); }
+        .cover-gradient-8 { background: linear-gradient(135deg, #701a75 0%, #4c1d95 50%, #1e1b4b 100%); }
+        .cover-gradient-9 { background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #020617 100%); }
+        .cover-gradient-10 { background: linear-gradient(135deg, #7c2d12 0%, #9a3412 50%, #431407 100%); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-github-bg text-github-text antialiased selection:bg-github-accent selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-github-border glass-panel sticky top-0 z-40 px-4 lg:px-8 py-3.5">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3">
+                <div class="p-2 rounded-xl bg-gradient-to-tr from-github-accent to-github-purple text-white shadow-lg shadow-github-accent/20">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-white leading-tight tracking-tight">Project Hub</h1>
+                    <p class="text-xs text-github-muted hidden sm:block">Personal Engineering & Creative Dashboard</p>
+                </div>
+            </div>
+
+            <!-- View Switcher (Gallery, Kanban, List) -->
+            <div class="flex items-center bg-github-bg p-1 rounded-xl border border-github-border">
+                <button id="viewGalleryBtn" onclick="switchView('gallery')" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-github-card text-github-accent shadow-sm">
+                    <i data-lucide="grid" class="w-3.5 h-3.5"></i>
+                    <span>Gallery</span>
+                </button>
+                <button id="viewKanbanBtn" onclick="switchView('kanban')" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-github-muted hover:text-white transition-all">
+                    <i data-lucide="kanban" class="w-3.5 h-3.5"></i>
+                    <span>Kanban</span>
+                </button>
+                <button id="viewListBtn" onclick="switchView('list')" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-github-muted hover:text-white transition-all">
+                    <i data-lucide="list-todo" class="w-3.5 h-3.5"></i>
+                    <span>List</span>
+                </button>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3">
+                <button onclick="openNewProjectModal()" class="px-4 py-2 bg-github-green hover:bg-emerald-600 text-white font-semibold text-xs rounded-xl transition-all shadow-md flex items-center gap-2 active:scale-95">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>New Project</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
+
+        <!-- Metrics Overview Section -->
+        <section class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="bg-github-card border border-github-border p-4 rounded-2xl flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-semibold text-github-muted uppercase tracking-wider">Total Projects</span>
+                    <h3 id="statTotal" class="text-2xl font-bold text-white mt-1">0</h3>
+                </div>
+                <div class="p-3 bg-github-accent/10 border border-github-accent/20 rounded-xl text-github-accent">
+                    <i data-lucide="folder-git-2" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <div class="bg-github-card border border-github-border p-4 rounded-2xl flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-semibold text-github-muted uppercase tracking-wider">In Progress</span>
+                    <h3 id="statInProgress" class="text-2xl font-bold text-github-accent mt-1">0</h3>
+                </div>
+                <div class="p-3 bg-github-accent/10 border border-github-accent/20 rounded-xl text-github-accent">
+                    <i data-lucide="play-circle" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <div class="bg-github-card border border-github-border p-4 rounded-2xl flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-semibold text-github-muted uppercase tracking-wider">Completed</span>
+                    <h3 id="statCompleted" class="text-2xl font-bold text-github-green mt-1">0</h3>
+                </div>
+                <div class="p-3 bg-github-green/10 border border-github-green/20 rounded-xl text-github-green">
+                    <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <div class="bg-github-card border border-github-border p-4 rounded-2xl flex items-center justify-between">
+                <div>
+                    <span class="text-xs font-semibold text-github-muted uppercase tracking-wider">Backlog</span>
+                    <h3 id="statBacklog" class="text-2xl font-bold text-github-orange mt-1">0</h3>
+                </div>
+                <div class="p-3 bg-github-orange/10 border border-github-orange/20 rounded-xl text-github-orange">
+                    <i data-lucide="clock" class="w-5 h-5"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filter & Search Controls Bar -->
+        <section class="bg-github-card border border-github-border p-4 rounded-2xl flex flex-col md:flex-row gap-4 items-center justify-between">
+            <!-- Search -->
+            <div class="relative w-full md:w-80">
+                <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-github-muted"></i>
+                <input type="text" id="searchInput" oninput="filterProjects()" placeholder="Search projects or tags..." class="w-full pl-10 pr-4 py-2 bg-github-bg border border-github-border rounded-xl text-xs text-white placeholder-github-muted focus:outline-none focus:border-github-accent transition-colors">
+            </div>
+
+            <!-- Category / Priority / Status Filters -->
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <select id="statusFilter" onchange="filterProjects()" class="bg-github-bg border border-github-border text-github-text text-xs rounded-xl px-3 py-2 outline-none focus:border-github-accent">
+                    <option value="all">All Statuses</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Backlog">Backlog</option>
+                </select>
+
+                <select id="priorityFilter" onchange="filterProjects()" class="bg-github-bg border border-github-border text-github-text text-xs rounded-xl px-3 py-2 outline-none focus:border-github-accent">
+                    <option value="all">All Priorities</option>
+                    <option value="High">High Priority</option>
+                    <option value="Medium">Medium Priority</option>
+                    <option value="Low">Low Priority</option>
+                </select>
+
+                <select id="sortBy" onchange="filterProjects()" class="bg-github-bg border border-github-border text-github-text text-xs rounded-xl px-3 py-2 outline-none focus:border-github-accent">
+                    <option value="newest">Sort: Newest</option>
+                    <option value="oldest">Sort: Oldest</option>
+                    <option value="progress">Sort: Progress %</option>
+                    <option value="title">Sort: Name (A-Z)</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- VIEW 1: GALLERY VIEW (VISUAL CARDS) -->
+        <section id="galleryViewSection" class="w-full">
+            <div id="galleryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamic Visual Cards Render Here -->
+            </div>
+            <!-- Empty State -->
+            <div id="emptyGalleryState" class="hidden text-center py-16 bg-github-card border border-github-border rounded-2xl p-8">
+                <div class="w-16 h-16 mx-auto mb-4 bg-github-subcard rounded-2xl flex items-center justify-center text-github-muted">
+                    <i data-lucide="folder-open" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white mb-1">No Projects Found</h3>
+                <p class="text-xs text-github-muted mb-4">You have no projects yet. Click below to create your first project!</p>
+                <button onclick="openNewProjectModal()" class="px-4 py-2 bg-github-accent text-white font-semibold text-xs rounded-xl transition-all">Create Project</button>
+            </div>
+        </section>
+
+        <!-- VIEW 2: KANBAN BOARD VIEW -->
+        <section id="kanbanViewSection" class="hidden w-full overflow-x-auto pb-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 min-w-[850px]">
+                
+                <!-- Column 1: Backlog -->
+                <div class="bg-github-card border border-github-border rounded-2xl p-4 flex flex-col gap-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-github-border">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-github-orange"></span>
+                            <h3 class="font-semibold text-sm text-white">Backlog</h3>
+                            <span id="kanbanBacklogCount" class="text-xs bg-github-subcard px-2 py-0.5 rounded-full text-github-muted">0</span>
+                        </div>
+                    </div>
+                    <div id="kanbanBacklogCol" class="flex flex-col gap-3 min-h-[400px]"></div>
+                </div>
+
+                <!-- Column 2: In Progress -->
+                <div class="bg-github-card border border-github-border rounded-2xl p-4 flex flex-col gap-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-github-border">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-github-accent"></span>
+                            <h3 class="font-semibold text-sm text-white">In Progress</h3>
+                            <span id="kanbanInProgressCount" class="text-xs bg-github-subcard px-2 py-0.5 rounded-full text-github-muted">0</span>
+                        </div>
+                    </div>
+                    <div id="kanbanInProgressCol" class="flex flex-col gap-3 min-h-[400px]"></div>
+                </div>
+
+                <!-- Column 3: Completed -->
+                <div class="bg-github-card border border-github-border rounded-2xl p-4 flex flex-col gap-4">
+                    <div class="flex items-center justify-between pb-2 border-b border-github-border">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-github-green"></span>
+                            <h3 class="font-semibold text-sm text-white">Completed</h3>
+                            <span id="kanbanCompletedCount" class="text-xs bg-github-subcard px-2 py-0.5 rounded-full text-github-muted">0</span>
+                        </div>
+                    </div>
+                    <div id="kanbanCompletedCol" class="flex flex-col gap-3 min-h-[400px]"></div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VIEW 3: COMPACT LIST VIEW -->
+        <section id="listViewSection" class="hidden w-full">
+            <div class="bg-github-card border border-github-border rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-github-subcard border-b border-github-border text-github-muted uppercase font-semibold">
+                            <tr>
+                                <th class="p-4">Project</th>
+                                <th class="p-4">Status</th>
+                                <th class="p-4">Priority</th>
+                                <th class="p-4">Tech Stack</th>
+                                <th class="p-4">Progress</th>
+                                <th class="p-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listTableBody" class="divide-y divide-github-border">
+                            <!-- Dynamic Rows Render Here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- PROJECT MODAL (CREATE / EDIT) -->
+    <div id="projectModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-github-card border border-github-border rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+            <div class="p-5 border-b border-github-border flex items-center justify-between sticky top-0 bg-github-card z-10">
+                <h3 id="modalTitle" class="font-bold text-base text-white">New Project</h3>
+                <button onclick="closeProjectModal()" class="text-github-muted hover:text-white p-1 rounded-lg">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="projectForm" onsubmit="saveProjectForm(event)" class="p-6 space-y-5">
+                <input type="hidden" id="projectId">
+
+                <!-- Title -->
+                <div>
+                    <label class="block text-xs font-semibold text-github-muted uppercase mb-1.5">Project Title</label>
+                    <input type="text" id="formTitle" required placeholder="e.g. AI Background Remover / Neural Chat" class="w-full bg-github-bg border border-github-border rounded-xl px-4 py-2.5 text-xs text-white placeholder-github-muted focus:outline-none focus:border-github-accent">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-xs font-semibold text-github-muted uppercase mb-1.5">Description</label>
+                    <textarea id="formDescription" rows="3" placeholder="Brief summary of what this project accomplishes..." class="w-full bg-github-bg border border-github-border rounded-xl p-3 text-xs text-white placeholder-github-muted focus:outline-none focus:border-github-accent"></textarea>
+                </div>
+
+                <!-- Cover Image (Upload File, URL, or Presets) -->
+                <div class="space-y-3">
+                    <label class="block text-xs font-semibold text-github-muted uppercase">Cover Image / Banner</label>
+                    
+                    <!-- File Upload Button -->
+                    <div class="flex items-center gap-3">
+                        <label class="px-4 py-2 bg-github-subcard border border-github-border hover:border-github-accent text-white text-xs font-semibold rounded-xl cursor-pointer transition-all flex items-center gap-2">
+                            <i data-lucide="upload" class="w-4 h-4 text-github-accent"></i>
+                            <span>Upload Image from Device</span>
+                            <input type="file" id="formFileInput" accept="image/*" onchange="handleFileUpload(event)" class="hidden">
+                        </label>
+                        <span id="fileNameLabel" class="text-xs text-github-muted truncate max-w-[200px]">No file chosen</span>
+                    </div>
+
+                    <!-- URL Input -->
+                    <div>
+                        <input type="text" id="formCoverUrl" placeholder="https://images.unsplash.com/... or paste image URL / Base64" class="w-full bg-github-bg border border-github-border rounded-xl px-4 py-2 text-xs text-white placeholder-github-muted focus:outline-none focus:border-github-accent">
+                    </div>
+                    
+                    <!-- Presets -->
+                    <div>
+                        <span class="text-[11px] text-github-muted block mb-2">Or select a gradient cover preset:</span>
+                        <div class="grid grid-cols-5 sm:grid-cols-10 gap-2">
+                            <button type="button" title="Dark Blue/Purple" onclick="selectCoverPreset('cover-gradient-1')" class="h-8 rounded-lg cover-gradient-1 border border-white/20 hover:scale-105 transition-transform"></button>
+                            <button type="button" title="Emerald Dark" onclick="selectCoverPreset('cover-gradient-2')" class="h-8 rounded-lg cover-gradient-2 border border-white/20 hover:scale-105 transition-transform"></button>
+                            <button type="button" title="Warm Red/Amber" onclick="selectCoverPreset('cover-gradient-3')" class="h-8 rounded-lg cover-gradient-3 border border-white/20 hover:scale-105 transition-transform"></button>
+                            <button type="button" title="Deep Cobalt" onclick="selectCoverPreset('cover-gradient-4')" class="h-8 rounded-lg cover-gradient-4 border border-white/20 hover:scale-105 transition-transform"></button>
+                            <button type="button" title="Neon Violet" onclick="selectCoverPreset('cover-gradient-5')" class="h-8 rounded-lg cover-gradient-5 border border-white/20 hover:scale-105 transition-transform"></button>
+                            <button type="button" title="Magenta Pink" onclick="selectCoverPreset('cover-gradient-6')" class="h-8 rounded-lg cover-gradient-6 border border-white/20 hover:scale-105 transition-transform"></button>
+                            <button type="button" title="Teal Ocean" onclick="selectCoverPreset('cover-gradient-7')" class="h-8 rounded-lg cover-gradient-7 border border-white/20 hover:scale-105 transition-transform"></button>
+                            <button type="button" title="Electric Purple" onclick="selectCoverPreset('cover-gradient-8')" class="h-8 rounded-lg cover-gradient-8 border border-white/20 hover:scale-105 transition-transform"></button>
+                            <button type="button" title="Midnight Slate" onclick="selectCoverPreset('cover-gradient-9')" class="h-8 rounded-lg cover-gradient-9 border border-white/20 hover:scale-105 transition-transform"></button>
+                            <button type="button" title="Sunset Copper" onclick="selectCoverPreset('cover-gradient-10')" class="h-8 rounded-lg cover-gradient-10 border border-white/20 hover:scale-105 transition-transform"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid Options: Status, Priority, Auto Progress Toggle, Manual Progress -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-github-muted uppercase mb-1.5">Status</label>
+                        <select id="formStatus" class="w-full bg-github-bg border border-github-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-github-accent">
+                            <option value="In Progress">In Progress</option>
+                            <option value="Backlog">Backlog</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-github-muted uppercase mb-1.5">Priority</label>
+                        <select id="formPriority" class="w-full bg-github-bg border border-github-border rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-github-accent">
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-github-subcard/50 border border-github-border rounded-xl space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-semibold text-white flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="formAutoProgress" onchange="toggleAutoProgressInput()" class="rounded bg-github-bg border-github-border text-github-accent focus:ring-0">
+                            <span>Auto-calculate progress based on completed tasks</span>
+                        </label>
+                    </div>
+                    <div id="manualProgressBox">
+                        <div class="flex justify-between items-center mb-1 text-xs">
+                            <label class="font-semibold text-github-muted uppercase">Manual Progress %</label>
+                            <span id="manualProgressVal" class="text-github-accent font-bold">0%</span>
+                        </div>
+                        <input type="range" id="formProgress" min="0" max="100" value="0" oninput="document.getElementById('manualProgressVal').innerText = this.value + '%'" class="w-full accent-github-accent">
+                    </div>
+                </div>
+
+                <!-- Tech Stack Tags -->
+                <div>
+                    <label class="block text-xs font-semibold text-github-muted uppercase mb-1.5">Tech Stack (comma separated)</label>
+                    <input type="text" id="formTechStack" placeholder="React, Tailwind, Node.js, Python" class="w-full bg-github-bg border border-github-border rounded-xl px-4 py-2.5 text-xs text-white placeholder-github-muted focus:outline-none focus:border-github-accent">
+                </div>
+
+                <!-- GitHub Repo & Live Demo Links -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-github-muted uppercase mb-1.5">GitHub URL</label>
+                        <input type="url" id="formGithubUrl" placeholder="https://github.com/user/repo" class="w-full bg-github-bg border border-github-border rounded-xl px-4 py-2 text-xs text-white placeholder-github-muted focus:outline-none focus:border-github-accent">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-github-muted uppercase mb-1.5">Live Demo URL</label>
+                        <input type="url" id="formDemoUrl" placeholder="https://myproject.vercel.app" class="w-full bg-github-bg border border-github-border rounded-xl px-4 py-2 text-xs text-white placeholder-github-muted focus:outline-none focus:border-github-accent">
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-github-border flex justify-end gap-3">
+                    <button type="button" onclick="closeProjectModal()" class="px-4 py-2 bg-github-subcard hover:bg-github-border text-github-muted text-xs font-semibold rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-github-green hover:bg-emerald-600 text-white text-xs font-semibold rounded-xl transition-all shadow-md">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PROJECT DETAIL VIEW MODAL -->
+    <div id="detailModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-github-card border border-github-border rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
+            <!-- Banner Header -->
+            <div id="detailBanner" class="h-44 w-full relative bg-cover bg-center flex items-end p-6 border-b border-github-border">
+                <div class="absolute inset-0 bg-gradient-to-t from-github-card via-github-card/60 to-transparent"></div>
+                <button onclick="closeDetailModal()" class="absolute top-4 right-4 p-2 rounded-full bg-black/60 text-white hover:bg-black transition-colors z-10">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span id="detailStatusBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"></span>
+                        <span id="detailPriorityBadge" class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider"></span>
+                    </div>
+                    <h2 id="detailTitle" class="text-2xl font-bold text-white leading-tight"></h2>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-6 space-y-6">
+                <!-- Links -->
+                <div class="flex items-center gap-3 border-b border-github-border pb-4">
+                    <a id="detailGithubLink" href="#" target="_blank" class="px-3 py-1.5 bg-github-subcard hover:bg-github-border text-github-text text-xs rounded-xl border border-github-border flex items-center gap-2 transition-colors">
+                        <i data-lucide="github" class="w-4 h-4"></i> Repository
+                    </a>
+                    <a id="detailDemoLink" href="#" target="_blank" class="px-3 py-1.5 bg-github-accent/10 hover:bg-github-accent/20 text-github-accent text-xs rounded-xl border border-github-accent/30 flex items-center gap-2 transition-colors">
+                        <i data-lucide="external-link" class="w-4 h-4"></i> Live Preview
+                    </a>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <h4 class="text-xs font-semibold text-github-muted uppercase mb-2">About Project</h4>
+                    <p id="detailDescription" class="text-xs text-github-text leading-relaxed"></p>
+                </div>
+
+                <!-- Progress Bar -->
+                <div>
+                    <div class="flex justify-between items-center text-xs mb-1">
+                        <span class="text-github-muted uppercase font-semibold">Completion Progress</span>
+                        <span id="detailProgressText" class="font-bold text-github-accent">0%</span>
+                    </div>
+                    <div class="w-full bg-github-bg h-2.5 rounded-full overflow-hidden border border-github-border">
+                        <div id="detailProgressBar" class="bg-gradient-to-r from-github-accent to-github-green h-full transition-all duration-300" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Tech Stack Badges -->
+                <div>
+                    <h4 class="text-xs font-semibold text-github-muted uppercase mb-2">Technologies Used</h4>
+                    <div id="detailTechStack" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <!-- Subtasks Checklist -->
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-xs font-semibold text-github-muted uppercase">Tasks / Milestones</h4>
+                        <button onclick="addSubtask()" class="text-xs text-github-accent hover:underline flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add Task
+                        </button>
+                    </div>
+                    <div id="detailSubtasks" class="space-y-2"></div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-github-subcard border-t border-github-border flex justify-between items-center">
+                <button id="detailDeleteBtn" class="px-3 py-1.5 bg-github-red/10 border border-github-red/30 text-github-red hover:bg-github-red/20 text-xs font-semibold rounded-xl transition-colors">Delete Project</button>
+                <button id="detailEditBtn" class="px-4 py-1.5 bg-github-accent text-white text-xs font-semibold rounded-xl transition-colors">Edit Details</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script Logic -->
+    <script>
+        let projects = [];
+        let currentView = 'gallery';
+        let activeDetailId = null;
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProjects();
+            filterProjects();
+            lucide.createIcons();
+        });
+
+        function loadProjects() {
+            const saved = localStorage.getItem('hub_projects_v2');
+            if (saved) {
+                try {
+                    projects = JSON.parse(saved);
+                } catch {
+                    projects = [];
+                }
+            } else {
+                projects = [];
+            }
+        }
+
+        function saveProjects() {
+            localStorage.setItem('hub_projects_v2', JSON.stringify(projects));
+            updateMetrics();
+        }
+
+        function updateMetrics() {
+            document.getElementById('statTotal').innerText = projects.length;
+            document.getElementById('statInProgress').innerText = projects.filter(p => p.status === 'In Progress').length;
+            document.getElementById('statCompleted').innerText = projects.filter(p => p.status === 'Completed').length;
+            document.getElementById('statBacklog').innerText = projects.filter(p => p.status === 'Backlog').length;
+        }
+
+        function switchView(view) {
+            currentView = view;
+
+            const btnG = document.getElementById('viewGalleryBtn');
+            const btnK = document.getElementById('viewKanbanBtn');
+            const btnL = document.getElementById('viewListBtn');
+
+            [btnG, btnK, btnL].forEach(b => {
+                b.className = "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-github-muted hover:text-white transition-all";
+            });
+
+            if (view === 'gallery') btnG.className = "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-github-card text-github-accent shadow-sm";
+            if (view === 'kanban') btnK.className = "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-github-card text-github-accent shadow-sm";
+            if (view === 'list') btnL.className = "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-github-card text-github-accent shadow-sm";
+
+            document.getElementById('galleryViewSection').classList.toggle('hidden', view !== 'gallery');
+            document.getElementById('kanbanViewSection').classList.toggle('hidden', view !== 'kanban');
+            document.getElementById('listViewSection').classList.toggle('hidden', view !== 'list');
+
+            filterProjects();
+        }
+
+        function calculateProjectProgress(p) {
+            if (p.autoProgress && p.subtasks && p.subtasks.length > 0) {
+                const doneCount = p.subtasks.filter(s => s.done).length;
+                return Math.round((doneCount / p.subtasks.length) * 100);
+            }
+            return p.progress || 0;
+        }
+
+        function filterProjects() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const statusF = document.getElementById('statusFilter').value;
+            const priorityF = document.getElementById('priorityFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+
+            let filtered = projects.filter(p => {
+                const matchesSearch = p.title.toLowerCase().includes(query) || 
+                                      p.description.toLowerCase().includes(query) || 
+                                      p.techStack.some(t => t.toLowerCase().includes(query));
+                const matchesStatus = statusF === 'all' || p.status === statusF;
+                const matchesPriority = priorityF === 'all' || p.priority === priorityF;
+                return matchesSearch && matchesStatus && matchesPriority;
+            });
+
+            filtered.sort((a, b) => {
+                const progA = calculateProjectProgress(a);
+                const progB = calculateProjectProgress(b);
+                if (sortBy === 'newest') return b.createdAt - a.createdAt;
+                if (sortBy === 'oldest') return a.createdAt - b.createdAt;
+                if (sortBy === 'progress') return progB - progA;
+                if (sortBy === 'title') return a.title.localeCompare(b.title);
+            });
+
+            renderGallery(filtered);
+            renderKanban(filtered);
+            renderList(filtered);
+            updateMetrics();
+            lucide.createIcons();
+        }
+
+        function renderGallery(items) {
+            const grid = document.getElementById('galleryGrid');
+            const empty = document.getElementById('emptyGalleryState');
+
+            grid.innerHTML = '';
+            if (items.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            } else {
+                empty.classList.add('hidden');
+            }
+
+            items.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "bg-github-card border border-github-border rounded-2xl overflow-hidden shadow-lg hover:border-github-accent/50 transition-all duration-300 flex flex-col group";
+
+                let coverStyle = "";
+                let coverClass = "h-40 w-full relative bg-cover bg-center flex flex-col justify-between p-4";
+                if (p.coverUrl.startsWith('cover-gradient')) {
+                    coverClass += ` ${p.coverUrl}`;
+                } else if (p.coverUrl) {
+                    coverStyle = `background-image: url('${p.coverUrl}');`;
+                } else {
+                    coverClass += " cover-gradient-1";
+                }
+
+                const priorityColor = p.priority === 'High' ? 'bg-github-red/20 text-github-red border-github-red/30' :
+                                     p.priority === 'Medium' ? 'bg-github-orange/20 text-github-orange border-github-orange/30' :
+                                     'bg-github-accent/20 text-github-accent border-github-accent/30';
+
+                const statusColor = p.status === 'Completed' ? 'bg-github-green/20 text-github-green border-github-green/30' :
+                                    p.status === 'In Progress' ? 'bg-github-accent/20 text-github-accent border-github-accent/30' :
+                                    'bg-github-orange/20 text-github-orange border-github-orange/30';
+
+                const currentProgress = calculateProjectProgress(p);
+
+                card.innerHTML = `
+                    <div class="${coverClass}" style="${coverStyle}">
+                        <div class="absolute inset-0 bg-gradient-to-t from-github-card via-transparent to-black/30"></div>
+                        <div class="relative z-10 flex justify-between items-center">
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border backdrop-blur-md ${statusColor}">
+                                ${p.status}
+                            </span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border backdrop-blur-md ${priorityColor}">
+                                ${p.priority}
+                            </span>
+                        </div>
+                        <div class="relative z-10">
+                            <h3 class="font-bold text-base text-white group-hover:text-github-accent transition-colors line-clamp-1">${p.title}</h3>
+                        </div>
+                    </div>
+
+                    <div class="p-5 flex-1 flex flex-col justify-between gap-4">
+                        <p class="text-xs text-github-muted line-clamp-2 leading-relaxed">${p.description || 'No description provided.'}</p>
+
+                        <div class="flex flex-wrap gap-1.5">
+                            ${p.techStack.map(t => `<span class="px-2 py-0.5 bg-github-subcard border border-github-border rounded-md text-[10px] text-github-text">${t}</span>`).join('')}
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-center text-[11px] mb-1">
+                                <span class="text-github-muted font-medium">Progress ${p.autoProgress ? '(Auto)' : ''}</span>
+                                <span class="font-semibold text-github-accent">${currentProgress}%</span>
+                            </div>
+                            <div class="w-full bg-github-bg h-2 rounded-full overflow-hidden border border-github-border">
+                                <div class="bg-gradient-to-r from-github-accent to-github-green h-full transition-all" style="width: ${currentProgress}%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-github-border flex items-center justify-between">
+                            <button onclick="openDetailModal('${p.id}')" class="text-xs text-github-accent hover:underline flex items-center gap-1 font-medium">
+                                View Details <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <div class="flex items-center gap-2">
+                                <button onclick="editProject('${p.id}')" class="p-1.5 rounded-lg text-github-muted hover:text-white hover:bg-github-subcard">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deleteProject('${p.id}')" class="p-1.5 rounded-lg text-github-muted hover:text-github-red hover:bg-github-red/10">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderKanban(items) {
+            const backlogCol = document.getElementById('kanbanBacklogCol');
+            const inProgressCol = document.getElementById('kanbanInProgressCol');
+            const completedCol = document.getElementById('kanbanCompletedCol');
+
+            backlogCol.innerHTML = '';
+            inProgressCol.innerHTML = '';
+            completedCol.innerHTML = '';
+
+            const backlog = items.filter(p => p.status === 'Backlog');
+            const inProgress = items.filter(p => p.status === 'In Progress');
+            const completed = items.filter(p => p.status === 'Completed');
+
+            document.getElementById('kanbanBacklogCount').innerText = backlog.length;
+            document.getElementById('kanbanInProgressCount').innerText = inProgress.length;
+            document.getElementById('kanbanCompletedCount').innerText = completed.length;
+
+            const renderKanbanCard = (p) => {
+                const prog = calculateProjectProgress(p);
+                const card = document.createElement('div');
+                card.className = "bg-github-subcard border border-github-border rounded-xl p-3.5 flex flex-col gap-3 shadow-sm hover:border-github-accent/40 cursor-pointer";
+                card.onclick = () => openDetailModal(p.id);
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-github-bg border border-github-border text-github-muted">${p.priority}</span>
+                        <span class="text-[10px] text-github-accent font-semibold">${prog}%</span>
+                    </div>
+                    <h4 class="text-xs font-semibold text-white line-clamp-1">${p.title}</h4>
+                    <div class="flex flex-wrap gap-1">
+                        ${p.techStack.slice(0, 2).map(t => `<span class="px-1.5 py-0.5 bg-github-bg text-[9px] rounded text-github-muted">${t}</span>`).join('')}
+                    </div>
+                `;
+                return card;
+            };
+
+            backlog.forEach(p => backlogCol.appendChild(renderKanbanCard(p)));
+            inProgress.forEach(p => inProgressCol.appendChild(renderKanbanCard(p)));
+            completed.forEach(p => completedCol.appendChild(renderKanbanCard(p)));
+        }
+
+        function renderList(items) {
+            const tbody = document.getElementById('listTableBody');
+            tbody.innerHTML = '';
+
+            items.forEach(p => {
+                const prog = calculateProjectProgress(p);
+                const row = document.createElement('tr');
+                row.className = "hover:bg-github-subcard/50 transition-colors";
+                row.innerHTML = `
+                    <td class="p-4 font-semibold text-white">${p.title}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 rounded-full text-[10px] font-semibold border bg-github-bg border-github-border">${p.status}</span></td>
+                    <td class="p-4 text-github-muted">${p.priority}</td>
+                    <td class="p-4">${p.techStack.join(', ')}</td>
+                    <td class="p-4 font-semibold text-github-accent">${prog}%</td>
+                    <td class="p-4 text-right space-x-2">
+                        <button onclick="openDetailModal('${p.id}')" class="text-github-accent hover:underline">View</button>
+                        <button onclick="deleteProject('${p.id}')" class="text-github-red hover:underline">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Upload de Imagem do Dispositivo (Converte para Base64)
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileNameLabel').innerText = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('formCoverUrl').value = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function openNewProjectModal() {
+            document.getElementById('projectId').value = '';
+            document.getElementById('projectForm').reset();
+            document.getElementById('fileNameLabel').innerText = 'No file chosen';
+            document.getElementById('modalTitle').innerText = 'New Project';
+            document.getElementById('formAutoProgress').checked = true;
+            toggleAutoProgressInput();
+            document.getElementById('projectModal').classList.remove('hidden');
+        }
+
+        function closeProjectModal() {
+            document.getElementById('projectModal').classList.add('hidden');
+        }
+
+        function selectCoverPreset(preset) {
+            document.getElementById('formCoverUrl').value = preset;
+            document.getElementById('fileNameLabel').innerText = 'Preset Selected';
+        }
+
+        function toggleAutoProgressInput() {
+            const isAuto = document.getElementById('formAutoProgress').checked;
+            const manualBox = document.getElementById('manualProgressBox');
+            manualBox.style.opacity = isAuto ? '0.4' : '1';
+            manualBox.style.pointerEvents = isAuto ? 'none' : 'auto';
+        }
+
+        function saveProjectForm(e) {
+            e.preventDefault();
+            const id = document.getElementById('projectId').value;
+            const title = document.getElementById('formTitle').value.trim();
+            const description = document.getElementById('formDescription').value.trim();
+            const coverUrl = document.getElementById('formCoverUrl').value.trim() || 'cover-gradient-1';
+            const status = document.getElementById('formStatus').value;
+            const priority = document.getElementById('formPriority').value;
+            const autoProgress = document.getElementById('formAutoProgress').checked;
+            const progress = parseInt(document.getElementById('formProgress').value) || 0;
+            const techStack = document.getElementById('formTechStack').value.split(',').map(s => s.trim()).filter(Boolean);
+            const githubUrl = document.getElementById('formGithubUrl').value.trim();
+            const demoUrl = document.getElementById('formDemoUrl').value.trim();
+
+            if (id) {
+                const p = projects.find(proj => proj.id === id);
+                if (p) {
+                    p.title = title;
+                    p.description = description;
+                    p.coverUrl = coverUrl;
+                    p.status = status;
+                    p.priority = priority;
+                    p.autoProgress = autoProgress;
+                    p.progress = progress;
+                    p.techStack = techStack;
+                    p.githubUrl = githubUrl;
+                    p.demoUrl = demoUrl;
+                }
+            } else {
+                const newP = {
+                    id: Date.now().toString(),
+                    title,
+                    description,
+                    coverUrl,
+                    status,
+                    priority,
+                    autoProgress,
+                    progress,
+                    techStack,
+                    githubUrl,
+                    demoUrl,
+                    subtasks: [],
+                    createdAt: Date.now()
+                };
+                projects.unshift(newP);
+            }
+
+            saveProjects();
+            filterProjects();
+            closeProjectModal();
+        }
+
+        function editProject(id) {
+            const p = projects.find(proj => proj.id === id);
+            if (!p) return;
+
+            document.getElementById('projectId').value = p.id;
+            document.getElementById('formTitle').value = p.title;
+            document.getElementById('formDescription').value = p.description;
+            document.getElementById('formCoverUrl').value = p.coverUrl;
+            document.getElementById('fileNameLabel').innerText = p.coverUrl.startsWith('data:image') ? 'Uploaded Image' : 'Custom Image/Preset';
+            document.getElementById('formStatus').value = p.status;
+            document.getElementById('formPriority').value = p.priority;
+            document.getElementById('formAutoProgress').checked = p.autoProgress !== false;
+            document.getElementById('formProgress').value = p.progress || 0;
+            document.getElementById('manualProgressVal').innerText = (p.progress || 0) + '%';
+            document.getElementById('formTechStack').value = p.techStack.join(', ');
+            document.getElementById('formGithubUrl').value = p.githubUrl || '';
+            document.getElementById('formDemoUrl').value = p.demoUrl || '';
+
+            toggleAutoProgressInput();
+            document.getElementById('modalTitle').innerText = 'Edit Project';
+            document.getElementById('projectModal').classList.remove('hidden');
+        }
+
+        function deleteProject(id) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                projects = projects.filter(p => p.id !== id);
+                saveProjects();
+                filterProjects();
+                closeDetailModal();
+            }
+        }
+
+        function openDetailModal(id) {
+            activeDetailId = id;
+            const p = projects.find(proj => proj.id === id);
+            if (!p) return;
+
+            const prog = calculateProjectProgress(p);
+
+            document.getElementById('detailTitle').innerText = p.title;
+            document.getElementById('detailDescription').innerText = p.description || 'No details provided.';
+            document.getElementById('detailStatusBadge').innerText = p.status;
+            document.getElementById('detailPriorityBadge').innerText = p.priority;
+            document.getElementById('detailProgressText').innerText = `${prog}%`;
+            document.getElementById('detailProgressBar').style.width = `${prog}%`;
+
+            const banner = document.getElementById('detailBanner');
+            if (p.coverUrl.startsWith('cover-gradient')) {
+                banner.className = `h-44 w-full relative bg-cover bg-center flex items-end p-6 border-b border-github-border ${p.coverUrl}`;
+                banner.style.backgroundImage = '';
+            } else if (p.coverUrl) {
+                banner.className = "h-44 w-full relative bg-cover bg-center flex items-end p-6 border-b border-github-border";
+                banner.style.backgroundImage = `url('${p.coverUrl}')`;
+            } else {
+                banner.className = "h-44 w-full relative bg-cover bg-center flex items-end p-6 border-b border-github-border cover-gradient-1";
+                banner.style.backgroundImage = '';
+            }
+
+            const ghLink = document.getElementById('detailGithubLink');
+            const demoLink = document.getElementById('detailDemoLink');
+
+            ghLink.style.display = p.githubUrl ? 'inline-flex' : 'none';
+            if (p.githubUrl) ghLink.href = p.githubUrl;
+
+            demoLink.style.display = p.demoUrl ? 'inline-flex' : 'none';
+            if (p.demoUrl) demoLink.href = p.demoUrl;
+
+            const techContainer = document.getElementById('detailTechStack');
+            techContainer.innerHTML = p.techStack.map(t => `<span class="px-2.5 py-1 bg-github-subcard border border-github-border rounded-lg text-xs font-medium text-github-text">${t}</span>`).join('');
+
+            renderSubtasks(p);
+
+            document.getElementById('detailDeleteBtn').onclick = () => deleteProject(p.id);
+            document.getElementById('detailEditBtn').onclick = () => {
+                closeDetailModal();
+                editProject(p.id);
+            };
+
+            document.getElementById('detailModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        function renderSubtasks(p) {
+            const container = document.getElementById('detailSubtasks');
+            container.innerHTML = '';
+
+            if (!p.subtasks || p.subtasks.length === 0) {
+                container.innerHTML = '<p class="text-xs text-github-muted italic">No tasks created yet.</p>';
+                return;
+            }
+
+            p.subtasks.forEach(st => {
+                const item = document.createElement('div');
+                item.className = "flex items-center gap-3 p-2 bg-github-subcard/50 rounded-xl border border-github-border text-xs";
+                item.innerHTML = `
+                    <input type="checkbox" ${st.done ? 'checked' : ''} onchange="toggleSubtask('${p.id}', '${st.id}')" class="rounded bg-github-bg border-github-border text-github-accent focus:ring-0">
+                    <span class="${st.done ? 'line-through text-github-muted' : 'text-white'} flex-1">${st.text}</span>
+                    <button onclick="deleteSubtask('${p.id}', '${st.id}')" class="text-github-muted hover:text-github-red p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                `;
+                container.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        function addSubtask() {
+            const p = projects.find(proj => proj.id === activeDetailId);
+            if (!p) return;
+
+            const text = prompt('Enter task description:');
+            if (text && text.trim()) {
+                if (!p.subtasks) p.subtasks = [];
+                p.subtasks.push({
+                    id: Date.now().toString(),
+                    text: text.trim(),
+                    done: false
+                });
+                saveProjects();
+                renderSubtasks(p);
+                filterProjects();
+                openDetailModal(p.id);
+            }
+        }
+
+        function toggleSubtask(projId, stId) {
+            const p = projects.find(proj => proj.id === projId);
+            if (!p) return;
+
+            const st = p.subtasks.find(s => s.id === stId);
+            if (st) {
+                st.done = !st.done;
+                saveProjects();
+                renderSubtasks(p);
+                filterProjects();
+                openDetailModal(p.id);
+            }
+        }
+
+        function deleteSubtask(projId, stId) {
+            const p = projects.find(proj => proj.id === projId);
+            if (!p) return;
+
+            p.subtasks = p.subtasks.filter(s => s.id !== stId);
+            saveProjects();
+            renderSubtasks(p);
+            filterProjects();
+            openDetailModal(p.id);
+        }
+    </script>
+</body>
+</html>
