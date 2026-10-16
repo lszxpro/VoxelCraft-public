@@ -986,7 +986,25 @@ const KNIGHT_ART=(()=>{
   return {root,materials,legs,arms,heads,tendrils,torso,head,flame,cape,wings,time:0,speed:0,knight:true};
  }
  function animate(r,dt,moving,wind,phase){r.time+=dt;const stride=Math.sin(r.time*2);for(const l of r.legs){l.hip.rotation.x=.12+stride*l.side*.12;l.knee.rotation.x=.18}r.torso.rotation.y=Math.sin(r.time*1.4)*.035;r.head.rotation.y=-r.torso.rotation.y;r.arms[0].joint.rotation.x=wind?-1.65:-.60;r.arms[0].elbow.rotation.x=wind?-.65:-.18;r.arms[1].joint.rotation.x=wind?.1:-.65;r.cape.rotation.x=.16+Math.sin(r.time*2)*.07;r.flame.scale.y=1+Math.sin(r.time*9)*.12;r.root.position.y=Math.sin(r.time*1.8)*.16;for(let i=0;i<r.wings.length;i++){r.wings[i].rotation.y=(i?1:-1)*(.15+Math.sin(r.time*(wind?7:1.8))*(wind?.48:.17));r.wings[i].rotation.z=(i?1:-1)*Math.sin(r.time*1.8)*.06}}
- return {build,animate};
+ const idleAnimate=animate;
+ function combatAnimate(r,dt,moving,wind,phase){
+  idleAnimate(r,dt,moving,wind,phase);
+  const action=r.action,prep=r.preparing,t=r.time,right=r.arms[0],left=r.arms[1],swing=Math.max(0,Math.min(1,1-(r.followThrough||0)/.75));
+  r.root.rotation.x=moving?-.12:0;r.torso.rotation.z=0;right.joint.rotation.y=0;right.joint.rotation.z=-.12;left.joint.rotation.z=.12;
+  if(action==='slash'){
+   const arc=prep?-.95:-.95+swing*2.5;
+   right.joint.rotation.set(prep?-1.65:-1.4+swing*.75,arc,prep?-.65:.65-swing*1.35);
+   right.elbow.rotation.x=prep?-.65:-.15;r.torso.rotation.y=arc*.35;r.torso.rotation.z=prep?-.10:.15*Math.sin(swing*Math.PI);
+  }else if(action==='charge'){
+   r.root.rotation.x=prep?-.25:-.48;left.joint.rotation.x=-1.5;left.elbow.rotation.x=-.35;right.joint.rotation.x=.45;r.head.rotation.x=.15;
+  }else if(action==='meteor'){
+   right.joint.rotation.x=-2.9;right.joint.rotation.z=-.25;right.elbow.rotation.x=-.1;r.head.rotation.x=-.35;r.root.position.y+=prep?.5:.2;
+  }else if(action==='gust'){
+   right.joint.rotation.z=-.8;left.joint.rotation.z=.8;r.root.rotation.x=prep?.18:-.25;
+  }else{r.head.rotation.x=0;right.joint.rotation.x=-.65+Math.sin(t*2)*.12;left.joint.rotation.x=-.55}
+  for(let i=0;i<r.wings.length;i++){const sign=i?1:-1,fast=action==='gust'||action==='charge';r.wings[i].rotation.y=sign*(.16+Math.sin(t*(fast?10:moving?5:2.4))*(fast?.75:moving?.42:.23));r.wings[i].rotation.z=sign*(moving?.12:0)}
+ }
+ return {build,animate:combatAnimate};
 })();
 
 // Shared, deterministic combat rules; rendered heads and tests use the same state.
@@ -1140,7 +1158,7 @@ const FINAL_REALM=(()=>{
  function remaining(){return 0;}
 // Internal hydra IDs are retained solely for compatibility with existing saves.
 const archonHazards=[],archonDeaths=[];
-function updateFragment(m,dt){const r=owned.get(m);if(m.hp<=0){kill(m);return}m.ph+=dt;m.cast-=dt;const dx=P.x-m.x,dz=P.z-m.z,dist=Math.hypot(dx,dz)||1,active=!GOD&&!CM&&P.hp>0;if(active&&dist>6){m.x+=dx/dist*2.8*dt;m.z+=dz/dist*2.8*dt}m.y=floorAt(m.x,m.z)+2.4+Math.sin(m.ph*2)*.3;m.g.position.set(m.x,m.y,m.z);m.g.rotation.y=Math.atan2(dx,dz);KNIGHT_ART.animate(r,dt,1,false,1);if(active&&dist<28&&m.cast<=0){m.cast=3;bolt(m)}}
+function updateFragment(m,dt){const r=owned.get(m);if(m.hp<=0){kill(m);return}m.ph+=dt;m.cast-=dt;const dx=P.x-m.x,dz=P.z-m.z,dist=Math.hypot(dx,dz)||1,active=P.hp>0;if(active&&dist>6){m.x+=dx/dist*2.8*dt;m.z+=dz/dist*2.8*dt}m.y=floorAt(m.x,m.z)+2.4+Math.sin(m.ph*2)*.3;m.g.position.set(m.x,m.y,m.z);m.g.rotation.y=Math.atan2(dx,dz);KNIGHT_ART.animate(r,dt,1,false,1);if(active&&dist<28&&m.cast<=0){m.cast=3;bolt(m)}}
 let archonDebuff=0,archonSlow=0,archonStun=0,archonDot=0,archonPrevious=null;
 function archonBurst(x,y,z,n=20){for(let i=0;i<n;i++)part(x,y,z,(rnd()-.5)*8,rnd()*6,(rnd()-.5)*8,0x79e5d0,.15+rnd()*.16,1.1,3)}
 function archonRing(x,y,z,r){for(let i=0;i<32;i++){const a=i*Math.PI/16;part(x+Math.cos(a)*r,y,z+Math.sin(a)*r,0,.4,0,0x72ded0,.18,.6,0)}}
@@ -1149,24 +1167,24 @@ function archonBreak(x,y,z,r){for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)for(le
 function archonHit(damage,m){if(!CM&&!GOD&&P.hp>0)hurt(damage,m)}
 function archonProjectile(m,angle=0){const origin=new T.Vector3(m.x,m.y+4,m.z),v=new T.Vector3(P.x-origin.x,P.y+.9-origin.y,P.z-origin.z).normalize().applyAxisAngle(new T.Vector3(0,1,0),angle).multiplyScalar(12),mesh=new T.Group(),material=new T.MeshBasicMaterial({color:0x78f5df});for(let i=-2;i<=2;i++){const p=new T.Mesh(unit,material);p.scale.set(.23,.34,.23);p.position.set(i*.29,-Math.abs(i)*.12,0);mesh.add(p)}mesh.position.copy(origin);sc.add(mesh);archonHazards.push({mesh,material,v,time:3,damage:25,slash:true})}
 function archonMeteor(x,z){const y=floorAt(x,z)+1,material=new T.MeshBasicMaterial({color:0x60e2d1}),mesh=new T.Mesh(unit,material);mesh.scale.set(.85,.85,.85);mesh.position.set(x,y+21,z);sc.add(mesh);archonHazards.push({mesh,material,v:new T.Vector3(0,-15,0),time:4,damage:40,meteor:true,ground:y});archonRing(x,y+.05,z,2.8)}
-function updateArchon(m,dt){const r=owned.get(m);dt=Math.min(.05,dt);m.ph+=dt;m.fl=Math.max(0,m.fl-dt);m.at-=dt;
+function updateArchon(m,dt){const r=owned.get(m);dt=Math.min(.05,dt);m.ph+=dt;m.fl=Math.max(0,m.fl-dt);m.at-=dt;m.followThrough=Math.max(0,(m.followThrough||0)-dt);
  const damage=Math.max(0,m.lastHp-m.hp);if(damage){m.hp=m.lastHp-damage*(m.wind>0?1:.55);m.lastHp=m.hp}if(m.hp<=0){kill(m);return}
  const fraction=m.hp/m.mh,phase=fraction<=.25?3:fraction<=.5?2:1;if(phase!==m.phase){m.phase=phase;message('ARCONTE · FASE '+phase+' · A tempestade se intensifica!')}
  for(const threshold of[.75,.5,.25])if(fraction<=threshold&&!m.summoned.has(threshold)){m.summoned.add(threshold);archonSummon(m)}
- const dx=P.x-m.x,dz=P.z-m.z,dist=Math.hypot(dx,dz)||1,active=!CM&&!GOD&&P.hp>0&&dist<42;
+ const dx=P.x-m.x,dz=P.z-m.z,dist=Math.hypot(dx,dz)||1,active=P.hp>0&&dist<96;
  for(const k in m.cooldowns)m.cooldowns[k]-=dt;
  m.swarm-=dt;if(active&&m.swarm<=0){m.swarm=12;const a=rnd()*Math.PI*2,x=m.x+Math.cos(a)*16,z=m.z+Math.sin(a)*16;spawnFinal('void_beetle',x,floorAt(x,z)+1,z)}
- if(active&&!m.attack){const kind=m.cooldowns.meteor<=0?'meteor':m.cooldowns.gust<=0?'gust':m.cooldowns.charge<=0?'charge':m.cooldowns.slash<=0?'slash':null;if(kind){m.attack=kind;m.wind=kind==='meteor'?2.4:kind==='charge'?1.35:1.1;m.target=[P.x,P.z];message(({meteor:'O céu se ilumina · saia dos círculos!',gust:'As asas se abrem · afaste-se!',charge:'Escudo preparado · desvie para o lado!',slash:'Espada carregada · desvie da onda!'})[kind]);if(kind==='meteor')for(let i=0;i<5;i++){const x=P.x+(i?rnd()*12-6:0),z=P.z+(i?rnd()*12-6:0);archonRing(x,floorAt(x,z)+1,z,2.8);m.meteorTargets.push([x,z])}}}
+ if(active&&!m.attack&&!m.charge&&!(m.followThrough>0)){const kind=m.cooldowns.meteor<=0?'meteor':m.cooldowns.gust<=0?'gust':m.cooldowns.charge<=0?'charge':m.cooldowns.slash<=0?'slash':null;if(kind){m.attack=kind;m.anim=kind;m.followThrough=0;m.wind=kind==='meteor'?2.4:kind==='charge'?1.35:1.1;m.target=[P.x,P.z];message(({meteor:'O céu se ilumina · saia dos círculos!',gust:'As asas se abrem · afaste-se!',charge:'Escudo preparado · desvie para o lado!',slash:'Espada carregada · desvie da onda!'})[kind]);if(kind==='meteor')for(let i=0;i<5;i++){const x=P.x+(i?rnd()*12-6:0),z=P.z+(i?rnd()*12-6:0);archonRing(x,floorAt(x,z)+1,z,2.8);m.meteorTargets.push([x,z])}}}
  if(m.attack){m.wind-=dt;if(m.wind<=0){const kind=m.attack;m.cooldowns[kind]=({slash:12,gust:20,charge:15,meteor:40})[kind]*(phase===3?.72:1);
   if(kind==='slash'){for(const a of[-.16,0,.16])archonProjectile(m,a);archonBreak(m.x+dx/dist*3,floorAt(m.x,m.z)+1,m.z+dz/dist*3,2)}
   if(kind==='gust'){archonRing(m.x,floorAt(m.x,m.z)+1,m.z,12);if(dist<18){P.kx=dx/dist*20;P.kz=dz/dist*20;P.vy=5}archonBurst(m.x,m.y+2,m.z,38)}
   if(kind==='charge'){const distance=Math.hypot(m.target[0]-m.x,m.target[1]-m.z),length=Math.min(15,distance),ux=(m.target[0]-m.x)/(distance||1),uz=(m.target[1]-m.z)/(distance||1);m.charge={x:ux,z:uz,left:.65,speed:length/.65};}
-  if(kind==='meteor'){for(const[x,z]of m.meteorTargets)archonMeteor(x,z);m.meteorTargets=[];archonSummon(m)}m.attack=null;
+  if(kind==='meteor'){for(const[x,z]of m.meteorTargets)archonMeteor(x,z);m.meteorTargets=[];archonSummon(m)}m.followThrough=.75;m.attack=null;
  }}
  if(m.charge){const q=m.charge;q.left-=dt;m.x+=q.x*q.speed*dt;m.z+=q.z*q.speed*dt;m.y=floorAt(m.x,m.z)+1;archonBurst(m.x,m.y+1,m.z,2);if(Math.hypot(P.x-m.x,P.z-m.z)<2.6&&!q.hit){q.hit=true;archonHit(18,m);if(!GOD&&!CM)archonStun=2}if(q.left<=0){archonBreak(m.x,m.y,m.z,2);archonRing(m.x,m.y,m.z,4);m.charge=null}}
- else{if(active&&dist>8&&!m.attack){m.x+=dx/dist*1.5*dt;m.z+=dz/dist*1.5*dt}const altitude=floorAt(m.x,m.z)+(m.attack==='meteor'?9:2);m.y+=(altitude-m.y)*(1-Math.exp(-dt*2))}
+ else{if(active&&dist>4.8&&!m.attack){const speed=(phase===3?5.2:3.8);m.x+=dx/dist*speed*dt;m.z+=dz/dist*speed*dt}const altitude=floorAt(m.x,m.z)+(m.attack==='meteor'?10:Math.max(1.2,Math.min(5,P.y-floorAt(m.x,m.z)+.8)));m.y+=(altitude-m.y)*(1-Math.exp(-dt*2))}
  m.kx=m.kz=m.vy=0;m.g.position.set(m.x,m.y,m.z);if(active)m.g.rotation.y+=Math.atan2(Math.sin(Math.atan2(dx,dz)-m.g.rotation.y),Math.cos(Math.atan2(dx,dz)-m.g.rotation.y))*(1-Math.exp(-dt*3));
- KNIGHT_ART.animate(r,dt,active?1:0,m.wind>0,phase);if(active&&rnd()<dt*12)archonBurst(m.x,m.y+7,m.z,1);
+ r.action=m.charge?'charge':m.attack||(m.followThrough>0?m.anim:null);r.preparing=!!m.attack;r.followThrough=m.followThrough||0;KNIGHT_ART.animate(r,dt,active&&dist>4.8?1:0,m.wind>0,phase);if(active&&rnd()<dt*12)archonBurst(m.x,m.y+7,m.z,1);
  if(active&&dist<4&&m.at<=0){m.at=2.5;archonHit(6,m)}
  for(const mat of r.materials)mat.emissive.setHex(m.fl>0?0x713c24:mat.userData.nativeEmission||0);
  bar.style.display='block';bar.innerHTML='<b>✧ ARCONTE DO MANGUEZAL ✧</b><div class="archon-track"><i style="width:'+Math.max(0,fraction*100)+'%"></i><span></span><em style="left:50%"></em><em style="left:75%"></em></div><small>'+Math.ceil(m.hp)+' / '+m.mh+' · FASE '+phase+' · '+(m.attack?'PREPARANDO ATAQUE · ARMADURA EXPOSTA':'ESCUDO ATIVO')+'</small>';
@@ -1184,6 +1202,8 @@ function updateArchonEffects(dt){
 }
 function defeatArchon(m){const r=owned.get(m);owned.delete(m);archonDeaths.push({g:m.g,r,time:2});const i=MB.indexOf(m);if(i>=0)MB.splice(i,1);BD['hydra:won']=1;stats.boss=1;stats.kills++;bar.style.display='none';const x=0,z=0,y=floorAt(x,z)+1;setB(x,y,z,34);CHST['2:'+x+','+y+','+z]=Array.from({length:27},(_,i)=>[{id:180,n:1},{id:152,n:6},{id:183,n:1},{id:151,n:12}][i]||null);addXP(100);message('ARCONTE DERROTADO · Um baú cósmico surgiu no centro da arena!');save()}
 {const css=document.createElement('style');css.textContent='#final-bossbar{background:#0b1e24cc;border:1px solid #63bfc0;padding:9px 12px;box-sizing:border-box;box-shadow:0 0 15px #39cbb52a}.archon-track{position:relative;height:12px;background:#142c36;margin:7px 0;border:1px solid #80cfe1}.archon-track i{display:block;height:100%;background:linear-gradient(90deg,#327cc7,#6df4e2)}.archon-track span{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(10% - 2px),#132b39 calc(10% - 2px),#132b39 10%)}.archon-track em{position:absolute;top:-3px;height:18px;width:2px;background:#d8e2b5}';document.head.append(css)}
+
+
 
  const defs={end_walker:{name:'Caçador de Raízes',hp:28,speed:1.8,damage:3,range:1.8},shell_guard:{name:'Carapaça de Âmbar',hp:40,speed:.9,damage:4,range:1.8},lumen_wisp:{name:'Medusa de Esporos',hp:16,speed:1.25,damage:2,range:1.7},archon_fragment:{name:'Fragmento do Arconte',hp:18,speed:2.8,damage:2,range:2},void_beetle:{name:'Besouro do Mangue',hp:16,speed:2.2,damage:2,range:1.6},hydra:{name:'Arconte do Manguezal',hp:360,speed:1.5,damage:6,range:4}};
  function syncHead(m,h){const r=owned.get(m),art=r.heads[h.index];m.g.updateMatrixWorld(true);const p=art.target.getWorldPosition(new T.Vector3());h.proxy.x=p.x;h.proxy.y=p.y;h.proxy.z=p.z;h.proxy.g.position.copy(p);}
