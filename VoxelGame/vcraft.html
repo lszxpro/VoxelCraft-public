@@ -618,7 +618,7 @@ case'vila':case'village':{if(!DIM){RET=[P.x,P.y,P.z];tmO=tm}const o=nearVila();i
 case'sky':case'ceu':case'céu':if(DIM==1)return'Você já está na Dimensão do Céu.';if(!DIM){RET=[P.x,P.y,P.z];tmO=tm}pre(1,.5,51.3,1.5);pcool=4;return'Teleportado para a Dimensão do Céu.';
 case'final':case'fim':if(DIM===2)return'Você já está na Manguezal de Âmbar.';FINAL_REALM.enter();return'Bem-vindo ao Manguezal de Âmbar.';
 
-case'finalboss':if(DIM!==2)return'Use /final primeiro.';FINAL_REALM.spawn('hydra',.5,53,.5);return'Hidra do Manguezal invocado.';
+case'finalboss':if(DIM!==2)return'Use /final primeiro.';FINAL_REALM.spawn('hydra',.5,53,.5);return'Arconte do Manguezal invocado.';
 
 case'finalkit':[[68,1],[150,2],[151,12],[111,1],[115,1],[116,12],[60,64]].forEach(([id,n])=>addI(id,n));return'Kit da Manguezal de Âmbar entregue.';
 case'overworld':case'main':case'mundo':if(!DIM)return'Você já está no mundo normal.';pre(0,RET?RET[0]:SPX,RET?RET[1]:60,RET?RET[2]:SPZ);tm=tmO;pcool=4;return'De volta ao mundo normal.';
@@ -932,6 +932,63 @@ function bootWorld(){
 if(document.readyState==='loading')addEventListener('DOMContentLoaded',bootWorld,{once:true});else bootWorld();
 </script><script>var VB={spd:0,arm:0,oxy:0};</script>
 <script>
+// Square voxel silhouette inspired by the reference: crowned helm, sword and shield.
+const KNIGHT_ART=(()=>{
+ const T=THREE,box=new T.BoxGeometry(1,1,1);
+ function build(){
+  const root=new T.Group(),materials=[],legs=[],arms=[],heads=[],tendrils=[];
+  const material=(color,emissive=0)=>{const m=new T.MeshLambertMaterial({color,emissive,emissiveIntensity:.65});m.userData.nativeEmission=emissive;materials.push(m);return m};
+  const iron=material(0x203333),edge=material(0x4d706b),shade=material(0x102321),amber=material(0xc4a35d),cloth=material(0x28665c),light=material(0x9ffff0,0x27bfae),blade=material(0xa0e5d7),dark=material(0x101b17);
+  const group=(p,x,y,z)=>{const g=new T.Group();g.position.set(x,y,z);p.add(g);return g};
+  const block=(p,w,h,d,x,y,z,m)=>{const o=new T.Mesh(box,m);o.scale.set(w,h,d);o.position.set(x,y,z);o.castShadow=o.receiveShadow=true;p.add(o);return o};
+  const torso=group(root,0,3.4,0);
+  block(torso,1.72,1.72,.92,0,0,0,iron);block(torso,1.92,.34,1.04,0,.63,0,edge);
+  for(let i=0;i<3;i++){block(torso,1.60-i*.14,.25,.16,0,.30-i*.34,.53,edge);block(torso,.20,.20,.18,0,.24-i*.34,.64,amber)}
+  block(torso,.34,.42,.15,0,.57,.61,amber);block(torso,.14,.25,.06,0,.57,.72,light);
+  block(root,1.35,.30,.88,0,2.35,0,shade);block(root,1.48,.16,1.03,0,2.4,.03,amber);block(root,.27,.24,.10,0,2.4,.59,edge);
+  for(const side of[-1,1]){
+   const hip=group(root,side*.45,2.20,0),knee=group(hip,0,-.96,0),ankle=group(knee,0,-.85,0);
+   block(hip,.69,.90,.75,0,-.43,0,iron);block(hip,.73,.68,.18,0,-.40,.43,edge);
+   block(knee,.78,.32,.86,0,0,.07,edge);block(knee,.62,.79,.69,0,-.45,0,iron);
+   block(ankle,.80,.36,1.07,0,-.18,.19,iron);block(ankle,.86,.14,1.12,0,-.29,.20,shade);
+   block(hip,.52,.88,.16,side*.08,-.24,.54,cloth);legs.push({hip,knee,ankle,phase:side<0?0:Math.PI,side});
+  }
+  const head=group(torso,0,1.22,0);
+  block(head,1.05,1.02,.98,0,0,0,iron);block(head,1.15,.18,1.08,0,.44,0,edge);
+  block(head,1.08,.44,.10,0,-.03,.55,dark);
+  for(const side of[-1,1]){block(head,.29,.22,.09,side*.29,.02,.62,light);block(head,.22,.73,.17,side*.42,-.12,.57,edge);block(head,.18,.64,.19,side*.53,.81,0,amber)}
+  block(head,.17,.79,.14,0,-.07,.64,amber);block(head,.74,.16,.13,0,-.45,.55,edge);block(head,.17,.80,.22,0,.90,0,amber);
+  const flame=group(head,0,1.38,0);for(let i=0;i<4;i++)block(flame,.24-i*.035,.24,.25-i*.03,(i%2)*.08,i*.18,0,light);
+  for(const side of[-1,1]){
+   const shoulder=group(torso,side*1.18,.55,0),elbow=group(shoulder,0,-.91,0),wrist=group(elbow,0,-.66,0);
+   block(shoulder,.95,.55,1.08,side*.05,.02,0,iron);block(shoulder,1.02,.16,1.13,side*.05,.25,0,edge);block(shoulder,.59,.78,.64,0,-.48,0,iron);
+   block(elbow,.67,.25,.74,0,0,0,edge);block(elbow,.60,.65,.71,0,-.37,0,iron);block(wrist,.56,.39,.60,0,-.13,0,shade);
+   arms.push({joint:shoulder,elbow,side});
+   if(side===-1){
+    const sword=group(wrist,0,-.10,.25);sword.rotation.x=.18;
+    block(sword,.17,.72,.18,0,.12,0,shade);block(sword,1.12,.18,.27,0,.51,0,amber);
+    block(sword,.37,2.75,.13,0,1.94,0,blade);block(sword,.13,2.90,.16,0,2.02,.01,edge);block(sword,.23,.30,.13,0,3.46,0,blade);
+    block(sword,.25,.19,.22,0,-.30,0,amber);
+   }else{
+    const shield=group(elbow,0,-.26,.53);
+    block(shield,1.52,1.85,.25,0,0,0,shade);block(shield,1.68,.19,.34,0,.93,0,edge);block(shield,1.60,.18,.34,0,-.93,0,edge);
+    for(const s of[-1,1])block(shield,.17,1.85,.34,s*.77,0,0,edge);
+    block(shield,.20,1.53,.10,0,0,.20,amber);block(shield,1.25,.17,.10,0,.05,.20,amber);block(shield,.36,.42,.12,0,.05,.29,light);
+   }
+  }
+  const cape=group(torso,0,.63,-.57);for(let i=0;i<5;i++)block(cape,.32,2.48+(i%2)*.22,.12,(i-2)*.30,-1.24,-Math.abs(i-2)*.04,cloth);
+  const wings=[];
+  for(const side of[-1,1]){const wing=group(torso,side*.73,.76,-.65);wings.push(wing);
+   const spar=block(wing,5.9,.22,.27,side*2.6,1.30,0,amber);spar.rotation.z=side*.41;
+   for(let row=0;row<7;row++){const feather=group(wing,side*(.55+row*.57),.30+row*.32,0);feather.rotation.z=side*(-.64+row*.035);block(feather,.40,2.10+row*.12,.18,0,-.75,0,cloth);for(let k=0;k<4;k++)block(feather,.36,.53,.22,side*(k%2)*.12,-.04-k*.56,0,k===3?light:blade);}
+  }
+  root.scale.setScalar(1.45);
+  return {root,materials,legs,arms,heads,tendrils,torso,head,flame,cape,wings,time:0,speed:0,knight:true};
+ }
+ function animate(r,dt,moving,wind,phase){r.time+=dt;const stride=Math.sin(r.time*2);for(const l of r.legs){l.hip.rotation.x=.12+stride*l.side*.12;l.knee.rotation.x=.18}r.torso.rotation.y=Math.sin(r.time*1.4)*.035;r.head.rotation.y=-r.torso.rotation.y;r.arms[0].joint.rotation.x=wind?-1.65:-.60;r.arms[0].elbow.rotation.x=wind?-.65:-.18;r.arms[1].joint.rotation.x=wind?.1:-.65;r.cape.rotation.x=.16+Math.sin(r.time*2)*.07;r.flame.scale.y=1+Math.sin(r.time*9)*.12;r.root.position.y=Math.sin(r.time*1.8)*.16;for(let i=0;i<r.wings.length;i++){r.wings[i].rotation.y=(i?1:-1)*(.15+Math.sin(r.time*(wind?7:1.8))*(wind?.48:.17));r.wings[i].rotation.z=(i?1:-1)*Math.sin(r.time*1.8)*.06}}
+ return {build,animate};
+})();
+
 // Shared, deterministic combat rules; rendered heads and tests use the same state.
 const HYDRA_RULES=(()=>{
  const profiles=[{name:'Vesícula de Ácido',color:0x99db6b,attack:'acid'},{name:'Fornalha de Âmbar',color:0xffbb68,attack:'ember'},{name:'Coroa de Tempestade',color:0x7eddda,attack:'storm'}];
@@ -1034,7 +1091,7 @@ const HYDRA_ART=(()=>{
 const FINAL_REALM=(()=>{
  const T=THREE,edits={},stats=new Proxy({mine:0,kills:0,port:0,boss:0,met:0,fm:0,dm:0,sky:0,vt:0},{get:(base,k)=>(BD['journey:legacy']||{})[k]??base[k],set:(base,k,v)=>{(BD['journey:legacy']||(BD['journey:legacy']={}))[k]=v;return true}}),owned=new Map(),bolts=[],particles=[];
  let loaded=null,timer=0,travel=false;
- const names={60:'Turfa Ancestral',61:'Raiz Petrificada',62:'Líquen Bioluminescente',63:'Vidro de Âmbar',64:'Vesícula de Esporos',65:'Quitina de Âmbar',66:'Fóssil de Âmbar',67:'Basalto de Mangue',68:'Âncora do Mangue',150:'Chave de Resina',151:'Placa de Âmbar',152:'Escama de Hidra',153:'Elmo de Quitina',154:'Couraça de Quitina',155:'Picareta de Âmbar',180:'Troféu da Hidra',181:'Fruto de Néctar',182:'Pérola de Esporos',183:'Lâmina da Hidra'};
+ const names={60:'Turfa Ancestral',61:'Raiz Petrificada',62:'Líquen Bioluminescente',63:'Vidro de Âmbar',64:'Vesícula de Esporos',65:'Quitina de Âmbar',66:'Fóssil de Âmbar',67:'Basalto de Mangue',68:'Âncora do Mangue',150:'Chave de Resina',151:'Placa de Âmbar',152:'Escama de Arconte',153:'Elmo de Quitina',154:'Couraça de Quitina',155:'Picareta de Âmbar',180:'Troféu do Arconte',181:'Fruto de Néctar',182:'Pérola de Esporos',183:'Lâmina do Arconte'};
  const colors=[0x42584a,0x655440,0x427d70,0xcc9a55,0x80c6a2,0x99733d,0x726445,0x273c3a,0x538a78];
  for(const[id,name]of Object.entries(names)){IN[id]=name;if(+id<100){BN[id]=name.toLowerCase();HD[id]=+id===65?2.5:+id===64?.8:1.2;}}
  window.itemName=id=>IN[id]||(BN[id]&&BN[id].replace(/(^|\s)\S/g,c=>c.toUpperCase()))||'Item '+id;
@@ -1047,7 +1104,7 @@ const FINAL_REALM=(()=>{
  Object.assign(DR,{66:151});Object.assign(NEED,{66:3,65:3});TT[155]=5;PS[155]=.18;DM[183]=12;FD[181]=8;
  const previousEQT=EQT;EQT=id=>id===153?0:id===154?1:previousEQT(id);
  const previousArmor=ARM;ARM=function(){return Math.min(.85,previousArmor()+(false?.10:0)+(false?.32:0))};
- REC.push({n:'Âncora do Mangue',i:[[108,2],[106,4],[14,4]],o:[68,1]},{n:'Chave de Resina',i:[[108,1],[107,4],[106,2]],o:[150,1]},{n:'Raiz Petrificada',i:[[60,4]],o:[61,4]},{n:'Vesícula de Esporos',i:[[182,2],[151,1]],o:[64,1]},{n:'Elmo de Quitina',i:[[151,5]],o:[153,1]},{n:'Couraça de Quitina',i:[[151,8],[152,1]],o:[154,1]},{n:'Picareta de Âmbar',i:[[151,3],[103,2]],o:[155,1]},{n:'Lâmina da Hidra',i:[[152,2],[151,4],[103,1]],o:[183,1]});
+ REC.push({n:'Âncora do Mangue',i:[[108,2],[106,4],[14,4]],o:[68,1]},{n:'Chave de Resina',i:[[108,1],[107,4],[106,2]],o:[150,1]},{n:'Raiz Petrificada',i:[[60,4]],o:[61,4]},{n:'Vesícula de Esporos',i:[[182,2],[151,1]],o:[64,1]},{n:'Elmo de Quitina',i:[[151,5]],o:[153,1]},{n:'Couraça de Quitina',i:[[151,8],[152,1]],o:[154,1]},{n:'Picareta de Âmbar',i:[[151,3],[103,2]],o:[155,1]},{n:'Lâmina do Arconte',i:[[152,2],[151,4],[103,1]],o:[183,1]});
  const biomeAt=(x,z)=>{const n=vn(x/95,113,z/95);return n<.38?0:n>.66?2:1};
  const floorAt=(x,z)=>{const r=Math.hypot(x,z);if(r<37)return 52;const biome=biomeAt(x,z),n=vn(x/32,114,z/32),raw=biome===0?46+n*4:biome===2?52+n*9:49+n*6,blend=Math.min(1,(r-37)/18);return Math.floor(52+(raw-52)*blend)};
  function* generateTask(x0,z0,S){
@@ -1075,21 +1132,68 @@ const FINAL_REALM=(()=>{
  const previousBlock=setB;setB=function(x,y,z,id){const old=gb(x,y,z);if(!id&&old){stats.mine++;if(old===64)stats.met++;if(old===66)stats.fm++;if(old===65)stats.dm++;}if(DIM===2){load();const k=(x>>4)+','+(z>>4),q=x+','+y+','+z,prior=EDS[k]&&EDS[k][q];previousBlock(x,y,z,id);(edits[k]||(edits[k]={}))[q]=id;if(prior===undefined){if(EDS[k])delete EDS[k][q]}else EDS[k][q]=prior;}else previousBlock(x,y,z,id)};
  const previousSave=save;save=function(){previousSave();try{load();localStorage[SK+'_hydra']=JSON.stringify({version:2,edits})}catch(e){}};
  function message(text){LTD.textContent=text;LTD.style.display='block';clearTimeout(LTT);LTT=setTimeout(()=>LTD.style.display='none',4200)}
- function enter(){if(DIM===2)return;if(!DIM){RET=[P.x,P.y,P.z];tmO=tm}pre(2,.5,53.1,29.5);P.yaw=0;P.pitch=-.05;pcool=3;stats.port=1;message('MANGUEZAL DE ÂMBAR · As gargantas brilham após cada cuspe: esse é o ponto fraco da Hidra. A âncora de entrada permite voltar.');}
+ function enter(){if(DIM===2)return;if(!DIM){RET=[P.x,P.y,P.z];tmO=tm}pre(2,.5,53.1,29.5);P.yaw=0;P.pitch=-.05;pcool=3;stats.port=1;message('MANGUEZAL DE ÂMBAR · O Arconte alado guarda a arena. Sua armadura enfraquece ao preparar ataques. A âncora de entrada permite voltar.');}
  function leave(){const r=RET||[SPX,60,SPZ];pre(0,...r);tm=tmO;pcool=3;message('Você voltou ao mundo normal.');}
  // Shared combat particles remain available to the original sound and damage modules.
- const unit=new T.BoxGeometry(1,1,1),particleMaterial=new T.MeshBasicMaterial({color:0xd6e6b5});
- function part(x,y,z,vx,vy,vz,color,size,life,gravity){if(CF.potato||particles.length>160)return;const m=new T.Mesh(unit,particleMaterial);m.position.set(x,y,z);m.scale.setScalar(size);sc.add(m);particles.push({m,vx,vy,vz,life,max:life,size,gravity:gravity||0})}
+ const particleColors=new Map();const unit=new T.BoxGeometry(1,1,1),particleMaterial=new T.MeshBasicMaterial({color:0xd6e6b5});
+ function part(x,y,z,vx,vy,vz,color,size,life,gravity){if(CF.potato||particles.length>160)return;if(!particleColors.has(color))particleColors.set(color,new T.MeshBasicMaterial({color}));const m=new T.Mesh(unit,particleColors.get(color));m.position.set(x,y,z);m.scale.setScalar(size);sc.add(m);particles.push({m,vx,vy,vz,life,max:life,size,gravity:gravity||0})}
  function remaining(){return 0;}
- const defs={end_walker:{name:'Caçador de Raízes',hp:28,speed:1.8,damage:3,range:1.8},shell_guard:{name:'Carapaça de Âmbar',hp:40,speed:.9,damage:4,range:1.8},lumen_wisp:{name:'Medusa de Esporos',hp:16,speed:1.25,damage:2,range:1.7},hydra:{name:'Hidra do Manguezal',hp:270,speed:.85,damage:5,range:4}};
+// Internal hydra IDs are retained solely for compatibility with existing saves.
+const archonHazards=[],archonDeaths=[];
+function updateFragment(m,dt){const r=owned.get(m);if(m.hp<=0){kill(m);return}m.ph+=dt;m.cast-=dt;const dx=P.x-m.x,dz=P.z-m.z,dist=Math.hypot(dx,dz)||1,active=!GOD&&!CM&&P.hp>0;if(active&&dist>6){m.x+=dx/dist*2.8*dt;m.z+=dz/dist*2.8*dt}m.y=floorAt(m.x,m.z)+2.4+Math.sin(m.ph*2)*.3;m.g.position.set(m.x,m.y,m.z);m.g.rotation.y=Math.atan2(dx,dz);KNIGHT_ART.animate(r,dt,1,false,1);if(active&&dist<28&&m.cast<=0){m.cast=3;bolt(m)}}
+let archonDebuff=0,archonSlow=0,archonStun=0,archonDot=0,archonPrevious=null;
+function archonBurst(x,y,z,n=20){for(let i=0;i<n;i++)part(x,y,z,(rnd()-.5)*8,rnd()*6,(rnd()-.5)*8,0x79e5d0,.15+rnd()*.16,1.1,3)}
+function archonRing(x,y,z,r){for(let i=0;i<32;i++){const a=i*Math.PI/16;part(x+Math.cos(a)*r,y,z+Math.sin(a)*r,0,.4,0,0x72ded0,.18,.6,0)}}
+function archonSummon(m){for(const side of[-1,1]){const x=m.x+side*6,z=m.z+3;archonRing(x,floorAt(x,z)+1,z,2);spawnFinal('archon_fragment',x,floorAt(x,z)+3,z)}}
+function archonBreak(x,y,z,r){for(let a=-r;a<=r;a++)for(let b=-r;b<=r;b++)for(let h=0;h<3;h++){const bx=Math.floor(x+a),by=Math.floor(y+h),bz=Math.floor(z+b),id=gb(bx,by,bz);if(id&&![8,24,34,35,68].includes(id))setB(bx,by,bz,0)}}
+function archonHit(damage,m){if(!CM&&!GOD&&P.hp>0)hurt(damage,m)}
+function archonProjectile(m,angle=0){const origin=new T.Vector3(m.x,m.y+4,m.z),v=new T.Vector3(P.x-origin.x,P.y+.9-origin.y,P.z-origin.z).normalize().applyAxisAngle(new T.Vector3(0,1,0),angle).multiplyScalar(12),mesh=new T.Group(),material=new T.MeshBasicMaterial({color:0x78f5df});for(let i=-2;i<=2;i++){const p=new T.Mesh(unit,material);p.scale.set(.23,.34,.23);p.position.set(i*.29,-Math.abs(i)*.12,0);mesh.add(p)}mesh.position.copy(origin);sc.add(mesh);archonHazards.push({mesh,material,v,time:3,damage:25,slash:true})}
+function archonMeteor(x,z){const y=floorAt(x,z)+1,material=new T.MeshBasicMaterial({color:0x60e2d1}),mesh=new T.Mesh(unit,material);mesh.scale.set(.85,.85,.85);mesh.position.set(x,y+21,z);sc.add(mesh);archonHazards.push({mesh,material,v:new T.Vector3(0,-15,0),time:4,damage:40,meteor:true,ground:y});archonRing(x,y+.05,z,2.8)}
+function updateArchon(m,dt){const r=owned.get(m);dt=Math.min(.05,dt);m.ph+=dt;m.fl=Math.max(0,m.fl-dt);m.at-=dt;
+ const damage=Math.max(0,m.lastHp-m.hp);if(damage){m.hp=m.lastHp-damage*(m.wind>0?1:.55);m.lastHp=m.hp}if(m.hp<=0){kill(m);return}
+ const fraction=m.hp/m.mh,phase=fraction<=.25?3:fraction<=.5?2:1;if(phase!==m.phase){m.phase=phase;message('ARCONTE · FASE '+phase+' · A tempestade se intensifica!')}
+ for(const threshold of[.75,.5,.25])if(fraction<=threshold&&!m.summoned.has(threshold)){m.summoned.add(threshold);archonSummon(m)}
+ const dx=P.x-m.x,dz=P.z-m.z,dist=Math.hypot(dx,dz)||1,active=!CM&&!GOD&&P.hp>0&&dist<42;
+ for(const k in m.cooldowns)m.cooldowns[k]-=dt;
+ m.swarm-=dt;if(active&&m.swarm<=0){m.swarm=12;const a=rnd()*Math.PI*2,x=m.x+Math.cos(a)*16,z=m.z+Math.sin(a)*16;spawnFinal('void_beetle',x,floorAt(x,z)+1,z)}
+ if(active&&!m.attack){const kind=m.cooldowns.meteor<=0?'meteor':m.cooldowns.gust<=0?'gust':m.cooldowns.charge<=0?'charge':m.cooldowns.slash<=0?'slash':null;if(kind){m.attack=kind;m.wind=kind==='meteor'?2.4:kind==='charge'?1.35:1.1;m.target=[P.x,P.z];message(({meteor:'O céu se ilumina · saia dos círculos!',gust:'As asas se abrem · afaste-se!',charge:'Escudo preparado · desvie para o lado!',slash:'Espada carregada · desvie da onda!'})[kind]);if(kind==='meteor')for(let i=0;i<5;i++){const x=P.x+(i?rnd()*12-6:0),z=P.z+(i?rnd()*12-6:0);archonRing(x,floorAt(x,z)+1,z,2.8);m.meteorTargets.push([x,z])}}}
+ if(m.attack){m.wind-=dt;if(m.wind<=0){const kind=m.attack;m.cooldowns[kind]=({slash:12,gust:20,charge:15,meteor:40})[kind]*(phase===3?.72:1);
+  if(kind==='slash'){for(const a of[-.16,0,.16])archonProjectile(m,a);archonBreak(m.x+dx/dist*3,floorAt(m.x,m.z)+1,m.z+dz/dist*3,2)}
+  if(kind==='gust'){archonRing(m.x,floorAt(m.x,m.z)+1,m.z,12);if(dist<18){P.kx=dx/dist*20;P.kz=dz/dist*20;P.vy=5}archonBurst(m.x,m.y+2,m.z,38)}
+  if(kind==='charge'){const distance=Math.hypot(m.target[0]-m.x,m.target[1]-m.z),length=Math.min(15,distance),ux=(m.target[0]-m.x)/(distance||1),uz=(m.target[1]-m.z)/(distance||1);m.charge={x:ux,z:uz,left:.65,speed:length/.65};}
+  if(kind==='meteor'){for(const[x,z]of m.meteorTargets)archonMeteor(x,z);m.meteorTargets=[];archonSummon(m)}m.attack=null;
+ }}
+ if(m.charge){const q=m.charge;q.left-=dt;m.x+=q.x*q.speed*dt;m.z+=q.z*q.speed*dt;m.y=floorAt(m.x,m.z)+1;archonBurst(m.x,m.y+1,m.z,2);if(Math.hypot(P.x-m.x,P.z-m.z)<2.6&&!q.hit){q.hit=true;archonHit(18,m);if(!GOD&&!CM)archonStun=2}if(q.left<=0){archonBreak(m.x,m.y,m.z,2);archonRing(m.x,m.y,m.z,4);m.charge=null}}
+ else{if(active&&dist>8&&!m.attack){m.x+=dx/dist*1.5*dt;m.z+=dz/dist*1.5*dt}const altitude=floorAt(m.x,m.z)+(m.attack==='meteor'?9:2);m.y+=(altitude-m.y)*(1-Math.exp(-dt*2))}
+ m.kx=m.kz=m.vy=0;m.g.position.set(m.x,m.y,m.z);if(active)m.g.rotation.y+=Math.atan2(Math.sin(Math.atan2(dx,dz)-m.g.rotation.y),Math.cos(Math.atan2(dx,dz)-m.g.rotation.y))*(1-Math.exp(-dt*3));
+ KNIGHT_ART.animate(r,dt,active?1:0,m.wind>0,phase);if(active&&rnd()<dt*12)archonBurst(m.x,m.y+7,m.z,1);
+ if(active&&dist<4&&m.at<=0){m.at=2.5;archonHit(6,m)}
+ for(const mat of r.materials)mat.emissive.setHex(m.fl>0?0x713c24:mat.userData.nativeEmission||0);
+ bar.style.display='block';bar.innerHTML='<b>✧ ARCONTE DO MANGUEZAL ✧</b><div class="archon-track"><i style="width:'+Math.max(0,fraction*100)+'%"></i><span></span><em style="left:50%"></em><em style="left:75%"></em></div><small>'+Math.ceil(m.hp)+' / '+m.mh+' · FASE '+phase+' · '+(m.attack?'PREPARANDO ATAQUE · ARMADURA EXPOSTA':'ESCUDO ATIVO')+'</small>';
+}
+function updateArchonEffects(dt){
+ if(DIM!==2){archonDebuff=archonSlow=archonStun=0}
+ if(archonDebuff>0){archonDebuff-=dt;archonDot+=dt;if(archonDot>=1){archonDot=0;archonHit(1)}}else archonDot=0;
+ if((archonStun>0||archonSlow>0)&&!CM&&!GOD){const f=archonStun>0?.15:.55;P.kx*=f;P.kz*=f;if(archonPrevious&&Math.hypot(P.x-archonPrevious[0],P.z-archonPrevious[1])<2){P.x=archonPrevious[0]+(P.x-archonPrevious[0])*f;P.z=archonPrevious[1]+(P.z-archonPrevious[1])*f}}archonPrevious=[P.x,P.z];archonStun=Math.max(0,archonStun-dt);archonSlow=Math.max(0,archonSlow-dt);
+ for(let i=archonHazards.length-1;i>=0;i--){const h=archonHazards[i];h.time-=dt;h.mesh.position.addScaledVector(h.v,dt);const p=h.mesh.position;let explode=false;
+  if(h.meteor&&p.y<=h.ground){explode=true;archonBurst(p.x,h.ground,p.z,25);if(Math.hypot(P.x-p.x,P.z-p.z)<3.5&&Math.abs(P.y-h.ground)<5)archonHit(h.damage);archonBreak(p.x,h.ground,p.z,1)}
+  if(h.slash&&Math.hypot(P.x-p.x,P.z-p.z)<1.3&&Math.abs(P.y+.8-p.y)<1.5){explode=true;archonHit(h.damage);if(!GOD&&!CM)archonDebuff=4}
+  if(explode||h.time<=0||DIM!==2){sc.remove(h.mesh);h.material.dispose();archonHazards.splice(i,1)}
+ }
+ for(let i=archonDeaths.length-1;i>=0;i--){const d=archonDeaths[i];d.time-=dt;d.r.wings.forEach((w,j)=>{w.rotation.z+=(j?1:-1)*dt;w.position.y-=dt*.8});d.r.root.position.y-=dt*.6;d.r.materials.forEach(mat=>{mat.transparent=true;mat.opacity=Math.max(0,d.time/2)});if(rnd()<.7)archonBurst(d.g.position.x+(rnd()-.5)*5,d.g.position.y+rnd()*8,d.g.position.z,2);if(d.time<=0){sc.remove(d.g);d.r.materials.forEach(mat=>mat.dispose());archonDeaths.splice(i,1)}}
+}
+function defeatArchon(m){const r=owned.get(m);owned.delete(m);archonDeaths.push({g:m.g,r,time:2});const i=MB.indexOf(m);if(i>=0)MB.splice(i,1);BD['hydra:won']=1;stats.boss=1;stats.kills++;bar.style.display='none';const x=0,z=0,y=floorAt(x,z)+1;setB(x,y,z,34);CHST['2:'+x+','+y+','+z]=Array.from({length:27},(_,i)=>[{id:180,n:1},{id:152,n:6},{id:183,n:1},{id:151,n:12}][i]||null);addXP(100);message('ARCONTE DERROTADO · Um baú cósmico surgiu no centro da arena!');save()}
+{const css=document.createElement('style');css.textContent='#final-bossbar{background:#0b1e24cc;border:1px solid #63bfc0;padding:9px 12px;box-sizing:border-box;box-shadow:0 0 15px #39cbb52a}.archon-track{position:relative;height:12px;background:#142c36;margin:7px 0;border:1px solid #80cfe1}.archon-track i{display:block;height:100%;background:linear-gradient(90deg,#327cc7,#6df4e2)}.archon-track span{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(10% - 2px),#132b39 calc(10% - 2px),#132b39 10%)}.archon-track em{position:absolute;top:-3px;height:18px;width:2px;background:#d8e2b5}';document.head.append(css)}
+
+ const defs={end_walker:{name:'Caçador de Raízes',hp:28,speed:1.8,damage:3,range:1.8},shell_guard:{name:'Carapaça de Âmbar',hp:40,speed:.9,damage:4,range:1.8},lumen_wisp:{name:'Medusa de Esporos',hp:16,speed:1.25,damage:2,range:1.7},archon_fragment:{name:'Fragmento do Arconte',hp:18,speed:2.8,damage:2,range:2},void_beetle:{name:'Besouro do Mangue',hp:16,speed:2.2,damage:2,range:1.6},hydra:{name:'Arconte do Manguezal',hp:360,speed:1.5,damage:6,range:4}};
  function syncHead(m,h){const r=owned.get(m),art=r.heads[h.index];m.g.updateMatrixWorld(true);const p=art.target.getWorldPosition(new T.Vector3());h.proxy.x=p.x;h.proxy.y=p.y;h.proxy.z=p.z;h.proxy.g.position.copy(p);}
  function spawnFinal(type,x,y,z){const def=defs[type];if(!def||owned.size>=18)return null;if(type==='hydra'&&[...owned.keys()].some(m=>m.t==='hydra'))return null;
-  const rig=HYDRA_ART.build(type),g=new T.Group();g.add(rig.root);g.position.set(x,y,z);sc.add(g);
+  const rig=type==='hydra'||type==='archon_fragment'?KNIGHT_ART.build():HYDRA_ART.build(type==='void_beetle'?'shell_guard':type);if(type==='archon_fragment'){rig.root.scale.setScalar(.30);rig.materials.forEach(mat=>mat.emissive.setHex(0x266f61));}const unusedRig=0,g=new T.Group();g.add(rig.root);g.position.set(x,y,z);sc.add(g);
   const m={t:type,g,x,y,z,by:y,hp:def.hp,mh:def.hp,lastHp:def.hp,vy:0,kx:0,kz:0,at:1,fl:0,pn:0,wt:0,dir:0,ph:0,hr:type==='hydra'?2.1:.65,hitY:type==='hydra'?1.5:1,dim:2,cast:2,wind:0,phase:1};MB.push(m);owned.set(m,rig);
-  if(type==='hydra'){m.heads=HYDRA_RULES.createHeads();for(const h of m.heads){const proxy={t:'hydra_head',owner:m,head:h,g:new T.Group(),x,y,z,hp:h.max,lastHp:h.max,hr:.72,hitY:.001,fl:0,vy:0,kx:0,kz:0,at:0,pn:0};h.proxy=proxy;MB.push(proxy);syncHead(m,h);}}
+  if(type==='hydra'){m.hr=1.4;m.hitY=3;m.cooldowns={slash:3,gust:12,charge:8,meteor:28};m.summoned=new Set();m.meteorTargets=[];m.swarm=5;}
   return m;
  }
- const bar=document.createElement('div');bar.id='final-bossbar';bar.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);width:min(570px,85vw);display:none;z-index:5;text-align:center;font:11px Arial;color:#e1f1d4;pointer-events:none';bar.innerHTML='<b>HIDRA DO MANGUEZAL</b><div id="hydra-head-bars" style="display:flex;gap:8px;margin-top:8px">'+HYDRA_RULES.profiles.map((h,i)=>'<div style="flex:1"><span>'+h.name+'</span><div style="height:7px;margin:4px 0;background:#102621;border:1px solid #72957b"><i data-head="'+i+'" style="display:block;height:100%;background:#'+h.color.toString(16)+'"></i></div><small data-status="'+i+'"></small></div>').join('')+'</div><p style="margin:4px" id="hydra-phase"></p>';document.body.appendChild(bar);
+ const bar=document.createElement('div');bar.id='final-bossbar';bar.style.cssText='position:fixed;top:12px;left:50%;transform:translateX(-50%);width:min(570px,85vw);display:none;z-index:5;text-align:center;font:11px Arial;color:#e1f1d4;pointer-events:none';bar.innerHTML='<b>ARCONTE DO MANGUEZAL</b><div id="hydra-head-bars" style="display:flex;gap:8px;margin-top:8px">'+HYDRA_RULES.profiles.map((h,i)=>'<div style="flex:1"><span>'+h.name+'</span><div style="height:7px;margin:4px 0;background:#102621;border:1px solid #72957b"><i data-head="'+i+'" style="display:block;height:100%;background:#'+h.color.toString(16)+'"></i></div><small data-status="'+i+'"></small></div>').join('')+'</div><p style="margin:4px" id="hydra-phase"></p>';document.body.appendChild(bar);
  function bolt(m,h=null,offset=0){if(bolts.length>=32)return;let origin=new T.Vector3(m.x,m.y+1.3,m.z);if(h){m.g.updateMatrixWorld(true);origin=owned.get(m).heads[h.index].mouth.getWorldPosition(new T.Vector3());}
   const velocity=new T.Vector3(P.x-origin.x,P.y+.8-origin.y,P.z-origin.z).normalize();velocity.applyAxisAngle(new T.Vector3(0,1,0),offset).multiplyScalar(h&&h.attack==='storm'?11:m.phase===3?9:7);
   const material=new T.MeshBasicMaterial({color:h?h.color:0x9dd79b}),mesh=new T.Mesh(unit,material);mesh.scale.setScalar(h&&h.attack==='ember'?.32:.22);mesh.position.copy(origin);sc.add(mesh);bolts.push({mesh,v:velocity,time:4,damage:h?3:2});
@@ -1097,11 +1201,11 @@ const FINAL_REALM=(()=>{
  function sever(m,h){if(h.severed)return;h.severed=true;h.alive=false;owned.get(m).heads[h.index].base.visible=false;const i=MB.indexOf(h.proxy);if(i>=0)MB.splice(i,1);part(h.proxy.x,h.proxy.y,h.proxy.z,0,2,0,h.color,.55,.8,1);message(h.name+' derrotada · '+m.heads.filter(q=>q.alive).length+' cabeças restantes.');}
  function resolveHead(m,h){if(!h.alive)return;const hit=Math.max(0,h.proxy.lastHp-h.proxy.hp);if(hit>0)HYDRA_RULES.damage(h,hit,h.exposed>0);h.proxy.hp=h.proxy.lastHp=h.hp;if(!h.alive)sever(m,h);}
  function showBoss(m){bar.style.display='block';for(const h of m.heads){bar.querySelector('[data-head="'+h.index+'"]').style.width=(h.hp/h.max*100)+'%';bar.querySelector('[data-status="'+h.index+'"]').textContent=!h.alive?'DERROTADA':h.wind>0?'PREPARANDO CUSPE':h.exposed>0?'GARGANTA EXPOSTA':Math.ceil(h.hp)+' / '+h.max;}bar.querySelector('#hydra-phase').textContent='FASE '+m.phase+' · Mire na garganta após cada cuspe · corpo blindado';}
- function update(m,dt){const r=owned.get(m),d=defs[m.t];if(!r)return;const boss=m.t==='hydra',dx=P.x-m.x,dz=P.z-m.z,dist=Math.hypot(dx,dz)||1,active=!CM&&!GOD&&P.hp>0;dt=Math.min(.05,dt);m.ph+=dt;m.fl=Math.max(0,m.fl-dt);m.at-=dt;m.cast-=dt;
-  if(boss){for(const h of m.heads)resolveHead(m,h);const bodyHit=Math.max(0,m.lastHp-m.hp),weakest=m.heads.filter(h=>h.alive).sort((a,b)=>a.hp-b.hp)[0];if(bodyHit&&weakest){HYDRA_RULES.damage(weakest,bodyHit*.35,false);weakest.proxy.hp=weakest.proxy.lastHp=weakest.hp;if(!weakest.alive)sever(m,weakest);}m.hp=m.lastHp=HYDRA_RULES.total(m.heads);if(m.hp<=0){kill(m);return;}const phase=HYDRA_RULES.phase(m.heads);if(phase!==m.phase){m.phase=phase;message('HIDRA · FASE '+phase+' · As cabeças restantes atacam mais rápido!');if(phase===2)for(const s of[-1,1]){const x=m.x+s*7,z=m.z-6,y=floorAt(x,z)+1;if(CD[(Math.floor(x)>>4)+','+(Math.floor(z)>>4)])spawnFinal('end_walker',x,y,z);}}}
+ function update(m,dt){if(m.t==='hydra')return updateArchon(m,dt);if(m.t==='archon_fragment')return updateFragment(m,dt);const r=owned.get(m),d=defs[m.t];if(!r)return;const boss=m.t==='hydra',dx=P.x-m.x,dz=P.z-m.z,dist=Math.hypot(dx,dz)||1,active=!CM&&!GOD&&P.hp>0;dt=Math.min(.05,dt);m.ph+=dt;m.fl=Math.max(0,m.fl-dt);m.at-=dt;m.cast-=dt;
+  if(boss){for(const h of m.heads)resolveHead(m,h);const bodyHit=Math.max(0,m.lastHp-m.hp),weakest=m.heads.filter(h=>h.alive).sort((a,b)=>a.hp-b.hp)[0];if(bodyHit&&weakest){HYDRA_RULES.damage(weakest,bodyHit*.35,false);weakest.proxy.hp=weakest.proxy.lastHp=weakest.hp;if(!weakest.alive)sever(m,weakest);}m.hp=m.lastHp=HYDRA_RULES.total(m.heads);if(m.hp<=0){kill(m);return;}const phase=HYDRA_RULES.phase(m.heads);if(phase!==m.phase){m.phase=phase;message('ARCONTE · FASE '+phase+' · As cabeças restantes atacam mais rápido!');if(phase===2)for(const s of[-1,1]){const x=m.x+s*7,z=m.z-6,y=floorAt(x,z)+1;if(CD[(Math.floor(x)>>4)+','+(Math.floor(z)>>4)])spawnFinal('end_walker',x,y,z);}}}
   const chase=active&&dist<34,sp=chase?d.speed*(m.phase===3?1.6:1):0;let vx=chase&&dist>d.range*.8?dx/dist*sp:0,vz=chase&&dist>d.range*.8?dz/dist*sp:0;
-  if(m.wind>0){m.wind-=dt;vx=vz=0;if(m.wind<=0&&active&&dist<(boss?5:2.2)&&Math.abs(P.y-m.y)<3)hurt(boss?5:d.damage,m);}
-  else if(chase&&dist<d.range&&m.at<=0){m.at=boss?4:1.5;m.wind=boss?.85:.35;if(boss)message('A cauda se ergue · recue do corpo da Hidra!');}
+  if(m.wind>0){m.wind-=dt;vx=vz=0;if(m.wind<=0&&active&&dist<(boss?5:2.2)&&Math.abs(P.y-m.y)<3)hurt(boss?5:d.damage,m);if(m.t==='void_beetle'&&!CM&&!GOD)archonSlow=3;}
+  else if(chase&&dist<d.range&&m.at<=0){m.at=boss?4:1.5;m.wind=boss?.85:.35;if(boss)message('A cauda se ergue · recue do corpo do Arconte!');}
   if(!boss&&m.t!=='end_walker'&&chase&&dist>3&&m.cast<=0){m.cast=3.6;bolt(m)}
   m.vy=Math.max(-24,m.vy-24*dt);m.kx*=Math.exp(-dt*8);m.kz*=Math.exp(-dt*8);mv(m,{x:(vx+m.kx)*dt,y:m.vy*dt,z:(vz+m.kz)*dt},boss?2.1:m.t==='shell_guard'?1.1:.65,boss?2.8:m.t==='shell_guard'?1.5:2.4);if((m.hx||m.hz)&&m.gd)m.vy=7;
   m.g.position.set(m.x,m.y,m.z);if(chase){const target=Math.atan2(dx,dz),diff=Math.atan2(Math.sin(target-m.g.rotation.y),Math.cos(target-m.g.rotation.y));m.g.rotation.y+=diff*(1-Math.exp(-dt*2.2));}HYDRA_ART.animate(r,dt,Math.hypot(vx,vz),m.wind>0?1:0);
@@ -1126,10 +1230,10 @@ const FINAL_REALM=(()=>{
  }
  function clean(m){const r=owned.get(m);if(r){if(m.heads)for(const h of m.heads){const i=MB.indexOf(h.proxy);if(i>=0)MB.splice(i,1);}r.materials.forEach(mat=>mat.dispose());owned.delete(m)}}
  const previousMob=mobU;mobU=function(m,dt){if(m.t==='hydra_head')return;if(defs[m.t])return update(m,dt);return previousMob(m,dt)};
- const previousKill=kill;kill=function(m){if(m.t==='hydra_head'){if(owned.has(m.owner))resolveHead(m.owner,m.head);return;}if(defs[m.t]){if(!MB.includes(m))return;if(m.t==='hydra'&&HYDRA_RULES.total(m.heads)>0){m.hp=m.lastHp;return;}stats.kills++;if(m.t==='hydra'){BD['hydra:won']=1;stats.boss=1;bar.style.display='none';addI(180,1);addI(152,3);addXP(100);message('VITÓRIA · As três cabeças caíram! Troféu da Hidra, escamas e 100 XP recebidos.');save()}else{addI(m.t==='lumen_wisp'?181:182,1);addXP(5)}clean(m)}return previousKill(m)};
+ const previousKill=kill;kill=function(m){if(m.t==='hydra'&&owned.has(m)){if(m.hp<=0)defeatArchon(m);return;}if(m.t==='hydra_head'){if(owned.has(m.owner))resolveHead(m.owner,m.head);return;}if(defs[m.t]){if(!MB.includes(m))return;if(m.t==='hydra'&&HYDRA_RULES.total(m.heads)>0){m.hp=m.lastHp;return;}stats.kills++;if(m.t==='hydra'){BD['hydra:won']=1;stats.boss=1;bar.style.display='none';addI(180,1);addI(152,3);addXP(100);message('VITÓRIA · As três cabeças caíram! Troféu do Arconte, escamas e 100 XP recebidos.');save()}else{addI(m.t==='lumen_wisp'?181:182,1);addXP(5)}clean(m)}return previousKill(m)};
  const previousSpawn=spawn;spawn=function(t,x,y,z){return defs[t]?spawnFinal(t,x,y,z):previousSpawn(t,x,y,z)};
  const previousSpawns=spawnU;spawnU=function(dt){for(const m of owned.keys())if(!MB.includes(m))clean(m);if(DIM!==2)return previousSpawns(dt);if(!run||P.hp<=0)return;timer-=dt;if(timer>0)return;timer=4;
-  if(!BD['hydra:won']&&Math.hypot(P.x,P.z)<20&&![...owned.keys()].some(m=>m.t==='hydra')){spawnFinal('hydra',.5,53,.5);message('A HIDRA DESPERTOU · Ataque as gargantas expostas após cada cuspe.');}
+  if(!BD['hydra:won']&&Math.hypot(P.x,P.z)<20&&![...owned.keys()].some(m=>m.t==='hydra')){spawnFinal('hydra',.5,53,.5);message('O ARCONTE DESPERTOU · Desvie dos avisos e ataque durante a preparação dos golpes.');}
   if(owned.size<9){const angle=rnd()*Math.PI*2,x=Math.floor(P.x+Math.sin(angle)*18)+.5,z=Math.floor(P.z+Math.cos(angle)*18)+.5,y=floorAt(x,z)+1;if(CD[(Math.floor(x)>>4)+','+(Math.floor(z)>>4)]&&!cb(x,y,z,.8,2.4))spawnFinal(['end_walker','shell_guard','lumen_wisp'][Math.floor(rnd()*3)],x,y,z);}
  };
  const previousAct=act;act=function(dt){if(useP&&run&&!travel){const r=rc(cam.position,new T.Vector3(0,0,-1).applyEuler(cam.rotation),5.5);if(r&&r.b===68){useP=0;if(DIM===2){if(Math.hypot(r.x,r.z)>10)leave();else if(!BD['hydra:won']){spawnFinal('hydra',.5,53,.5);message('Ataque as gargantas luminosas quando as cabeças baixarem após cuspir.')}else message('O manguezal está em paz. A âncora de entrada leva ao mundo normal.');}else if(DIM===0){const item=inv[sel];if(!item||item.id!==150)message('Segure uma Chave de Resina e use na Âncora.');else{if(!CM){item.n--;if(!item.n)inv[sel]=null;}ui();enter()}}}}
@@ -1138,14 +1242,14 @@ const FINAL_REALM=(()=>{
  const sporeGeo=new T.BufferGeometry(),sporePositions=new Float32Array(180*3);for(let i=0;i<180;i++){sporePositions[i*3]=(rnd()-.5)*64;sporePositions[i*3+1]=(rnd()-.5)*24;sporePositions[i*3+2]=(rnd()-.5)*64;}sporeGeo.setAttribute('position',new T.BufferAttribute(sporePositions,3));
  const sporeCanvas=document.createElement('canvas');sporeCanvas.width=sporeCanvas.height=32;const sporeCtx=sporeCanvas.getContext('2d'),sporeGradient=sporeCtx.createRadialGradient(16,16,1,16,16,15);sporeGradient.addColorStop(0,'#fff8c9');sporeGradient.addColorStop(.3,'#a5dfb3bb');sporeGradient.addColorStop(1,'#89d7b200');sporeCtx.fillStyle=sporeGradient;sporeCtx.fillRect(0,0,32,32);const sporeTexture=new T.CanvasTexture(sporeCanvas);
  const spores=new T.Points(sporeGeo,new T.PointsMaterial({map:sporeTexture,color:0xc0e1a2,size:.19,transparent:true,opacity:.58,depthWrite:false,blending:T.AdditiveBlending}));spores.visible=false;spores.frustumCulled=false;sc.add(spores);let sporeTime=0;
- const previousSky=sky;sky=function(dt){previousSky(dt);progressionTick(dt);hotN();if($('inv').style.display!=='flex')ic2.style.display='none';if(DIM===1)stats.sky=1;if(DIM===2)stats.vt+=dt;spores.visible=DIM===2&&!CF.potato;if(spores.visible){sporeTime+=dt;spores.position.set(P.x,P.y+4,P.z);for(let i=0;i<180;i++){sporePositions[i*3]+=(.10+Math.sin(sporeTime*.3+i)*.05)*dt;sporePositions[i*3+1]+=.08*dt;if(sporePositions[i*3]>32)sporePositions[i*3]=-32;if(sporePositions[i*3+1]>12)sporePositions[i*3+1]=-12;}sporeGeo.attributes.position.needsUpdate=true;}
+ const previousSky=sky;sky=function(dt){previousSky(dt);progressionTick(dt);hotN();if($('inv').style.display!=='flex')ic2.style.display='none';if(DIM===1)stats.sky=1;if(DIM===2)stats.vt+=dt;updateArchonEffects(Math.min(.05,dt));spores.visible=DIM===2&&!CF.potato;if(spores.visible){sporeTime+=dt;spores.position.set(P.x,P.y+4,P.z);for(let i=0;i<180;i++){sporePositions[i*3]+=(.10+Math.sin(sporeTime*.3+i)*.05)*dt;sporePositions[i*3+1]+=.08*dt;if(sporePositions[i*3]>32)sporePositions[i*3]=-32;if(sporePositions[i*3+1]>12)sporePositions[i*3+1]=-12;}sporeGeo.attributes.position.needsUpdate=true;}
  if(DIM===2){sc.background.setHex(0x102b2c);sc.fog.color.setHex(0x345f58);sc.fog.near=8;sc.fog.far=78;amb.color.setHex(0x8cc9b0);amb.intensity=.72;dl.color.setHex(0xf5c27c);dl.intensity=.78;sun.visible=moon.visible=false;P.air=10;}else{amb.color.setHex(0xffffff);dl.color.setHex(0xffffff);}
   if(DIM!==2||!MB.some(m=>m.t==='hydra'))bar.style.display='none';
   for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.life-=dt;p.m.position.x+=p.vx*dt;p.m.position.y+=p.vy*dt;p.m.position.z+=p.vz*dt;p.vy-=p.gravity*dt;p.m.scale.setScalar(p.size*Math.max(0,p.life/p.max));if(p.life<=0){sc.remove(p.m);particles.splice(i,1)}}
   for(let i=bolts.length-1;i>=0;i--){const b=bolts[i];b.time-=dt;const n=Math.max(1,Math.ceil(b.v.length()*dt/.15));for(let j=0;j<n&&b.time>0;j++){b.mesh.position.addScaledVector(b.v,dt/n);const p=b.mesh.position;if(DIM!==2||gb(Math.floor(p.x),Math.floor(p.y),Math.floor(p.z)))b.time=0;else if(Math.hypot(p.x-P.x,p.z-P.z)<.42&&p.y>P.y&&p.y<P.y+1.8){if(!CM&&!GOD)hurt(b.damage);b.time=0;}}if(b.time<=0){sc.remove(b.mesh);b.mesh.material.dispose();bolts.splice(i,1)}}
  };
- const previousPre=pre;pre=function(...args){spores.visible=false;if(args[0]!==2&&DIM===2){sc.fog.near=40;sc.fog.far=Math.max(110,RD*20);}for(const m of [...owned.keys()])clean(m);for(const b of bolts){sc.remove(b.mesh);b.mesh.material.dispose();}bolts.length=0;bar.style.display='none';return previousPre(...args)};
- const previousCommand=tcmd;tcmd=function(line){const a=line.trim().replace(/^\//,'').toLowerCase().split(/\s+/),aliases={vigia:'end_walker',carapaca:'shell_guard',lumen:'lumen_wisp',hidra:'hydra'},type=aliases[a[1]]||a[1];if(['spawn','summon','invocar'].includes(a[0])&&defs[type]){if(DIM!==2)return'Estes mobs pertencem à Manguezal de Âmbar. Use /final.';const x=P.x-Math.sin(P.yaw)*6,z=P.z-Math.cos(P.yaw)*6,y=floorAt(x,z)+1;if(!y||!CD[(Math.floor(x)>>4)+','+(Math.floor(z)>>4)]||cb(x,y,z,.7,2))return'Não há espaço seguro aqui.';return spawnFinal(type,x,y,z)?defs[type].name+' invocado.':'Limite de criaturas atingido.'}const result=previousCommand(line);return a[0]==='help'?result+'\nManguezal de Âmbar: /final /finalkit /finalboss · /spawn vigia|carapaca|lumen|hidra':result};
+ const previousPre=pre;pre=function(...args){spores.visible=false;for(const h of archonHazards){sc.remove(h.mesh);h.material.dispose()}archonHazards.length=0;archonDebuff=archonSlow=archonStun=0;archonPrevious=null;for(const d of archonDeaths){sc.remove(d.g);d.r.materials.forEach(mat=>mat.dispose())}archonDeaths.length=0;if(args[0]!==2&&DIM===2){sc.fog.near=40;sc.fog.far=Math.max(110,RD*20);}for(const m of [...owned.keys()])clean(m);for(const b of bolts){sc.remove(b.mesh);b.mesh.material.dispose();}bolts.length=0;bar.style.display='none';return previousPre(...args)};
+ const previousCommand=tcmd;tcmd=function(line){const a=line.trim().replace(/^\//,'').toLowerCase().split(/\s+/),aliases={vigia:'end_walker',carapaca:'shell_guard',lumen:'lumen_wisp',arconte:'hydra',archon:'hydra',fragmento:'archon_fragment',besouro:'void_beetle',hidra:'hydra'},type=aliases[a[1]]||a[1];if(['spawn','summon','invocar'].includes(a[0])&&defs[type]){if(DIM!==2)return'Estes mobs pertencem à Manguezal de Âmbar. Use /final.';const x=P.x-Math.sin(P.yaw)*6,z=P.z-Math.cos(P.yaw)*6,y=floorAt(x,z)+1;if(!y||!CD[(Math.floor(x)>>4)+','+(Math.floor(z)>>4)]||cb(x,y,z,.7,2))return'Não há espaço seguro aqui.';return spawnFinal(type,x,y,z)?defs[type].name+' invocado.':'Limite de criaturas atingido.'}const result=previousCommand(line);return a[0]==='help'?result+'\nManguezal de Âmbar: /final /finalkit /finalboss · /spawn vigia|carapaca|lumen|hidra':result};
  // ===== panorama do menu e textura de UI =====
 const UXS=[{id:'alpha',name:'Alpha',desc:'Aparência original do jogo.'},{id:'padrao',name:'Padrão',desc:'Menus clássicos.'},{id:'sodium',name:'Sodium / Iris',desc:'Painéis translúcidos.'}];
 const uxs=document.createElement('style');uxs.textContent=`body.uis{--mc:system-ui,Arial,sans-serif}body.uis .mb{background:rgba(24,24,28,.55);color:#e8e8ec;border:1px solid rgba(255,255,255,.2);border-radius:6px;box-shadow:none;backdrop-filter:blur(6px);text-shadow:none;font-weight:600}body.uis .mb:hover,body.uis .mb:focus-visible,body.uis .mb:active{background:rgba(255,255,255,.14);outline:0;color:#fff;text-shadow:none;border-color:#6cf}body.uis .mb.gr{background:rgba(52,168,83,.35);border-color:#4ade80;box-shadow:none;text-shadow:none}body.uis .mb.rd{background:rgba(220,60,60,.35);border-color:#f77;box-shadow:none;text-shadow:none}body.uis button:not(.mb){background:rgba(24,24,28,.6);color:#eee;border:1px solid rgba(255,255,255,.22);border-radius:6px}body.uis #menu{background:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.45))}body.uis .ov,body.uis .pn{background:rgba(8,10,14,.55);backdrop-filter:blur(8px)}body.uis #wm{background:rgba(8,10,14,.55);backdrop-filter:blur(8px)}body.uis #wm .hd{background:rgba(20,22,28,.75);border-bottom:1px solid rgba(255,255,255,.15);color:#fff}body.uis #wb{color:#fff}body.uis .tab{background:rgba(30,32,38,.6);border:1px solid rgba(255,255,255,.15);box-shadow:none;border-radius:6px}body.uis .tab:after{background:#6cf;height:2px}body.uis .pl{background:rgba(28,30,36,.6);border:1px solid rgba(255,255,255,.15);box-shadow:none;border-radius:8px}body.uis .pl .ed{background:rgba(255,255,255,.06);border-left:1px solid rgba(255,255,255,.12)}body.uis .s{background:rgba(20,22,28,.6);border:1px solid rgba(255,255,255,.25);border-radius:4px}body.uis .s.on{border-color:#6cf;box-shadow:0 0 6px #6cf}body.uis #lb{border-color:#6cf}`;document.head.append(uxs);
@@ -1171,7 +1275,7 @@ const BR=[[['Mineração',28],['Combate',72]],[['Exploração',30],['Sobrevivên
 const N=[[['o1','Primeiros Passos','Minerar blocos',()=>ST.mine,20,'+2% de velocidade',()=>VB.spd+=.02,28,17,null,'⛏'],['o2','Mineiro Persistente','Minerar blocos',()=>ST.mine,150,'+3% de resistência a dano',()=>VB.arm+=.03,28,37,'o1','⚒'],['o3','Escavador','Minerar blocos',()=>ST.mine,500,'+1% de velocidade',()=>VB.spd+=.01,28,57,'o2','⛰'],['o4','Quebra de Selos','Vesícula de Esporos minerada',()=>ST.met,1,'-5% de dano recebido',()=>VB.arm+=.05,28,77,'o3','☄'],
 ['o5','Caçador','Derrotar criaturas',()=>ST.kills,10,'+1% de velocidade',()=>VB.spd+=.01,72,17,null,'⚔'],['o6','Guerreiro','Derrotar criaturas',()=>ST.kills,40,'+3% de resistência a dano',()=>VB.arm+=.03,72,37,'o5','✠'],['o7','Veterano','Derrotar criaturas',()=>ST.kills,100,'+1% de velocidade',()=>VB.spd+=.01,72,57,'o6','✪']],
 [['a1','Explorador do Céu','Entrar na Dimensão do Céu',()=>ST.sky,1,'+1% de velocidade',()=>VB.spd+=.01,30,17,null,'☁'],['a2','Mestre das Alturas','Minerar blocos',()=>ST.mine,400,'+1% de velocidade',()=>VB.spd+=.01,30,40,'a1','▲'],['a3','Caçador de Nuvens','Derrotar criaturas',()=>ST.kills,30,'+2% de resistência a dano',()=>VB.arm+=.02,70,17,null,'✧'],['a4','Guardião do Céu','Derrotar criaturas',()=>ST.kills,80,'+2% de resistência a dano',()=>VB.arm+=.02,70,40,'a3','✦']],
-[['v1','Âncora do Mangue','Ativar o Âncora do Mangue',()=>ST.port,1,'-5% de dano recebido',()=>VB.arm+=.05,30,17,null,'◎'],['v2','Explorador da Coroa','Segundos na Coroa',()=>ST.vt|0,120,'-8% de dano recebido',()=>VB.arm+=.08,30,40,'v1','❂'],['v3','Viajante da Coroa','Segundos na Coroa',()=>ST.vt|0,600,'-6% de dano recebido',()=>VB.arm+=.06,30,63,'v2','◉'],['v4','Mineiro de Âmbar','Minério de Âmbar minerado',()=>ST.fm,20,'+2% de velocidade',()=>VB.spd+=.02,72,17,'v1','◆'],['v5','Mestre da Âmbar','Âmbar minerada',()=>ST.dm,5,'+3% de resistência a dano',()=>VB.arm+=.03,72,40,'v4','❖'],['v6','Domador do Hidra','Derrotar o Hidra',()=>ST.boss,1,'+3% de velocidade',()=>VB.spd+=.03,72,63,'v5','♛']]];
+[['v1','Âncora do Mangue','Ativar o Âncora do Mangue',()=>ST.port,1,'-5% de dano recebido',()=>VB.arm+=.05,30,17,null,'◎'],['v2','Explorador da Coroa','Segundos na Coroa',()=>ST.vt|0,120,'-8% de dano recebido',()=>VB.arm+=.08,30,40,'v1','❂'],['v3','Viajante da Coroa','Segundos na Coroa',()=>ST.vt|0,600,'-6% de dano recebido',()=>VB.arm+=.06,30,63,'v2','◉'],['v4','Mineiro de Âmbar','Minério de Âmbar minerado',()=>ST.fm,20,'+2% de velocidade',()=>VB.spd+=.02,72,17,'v1','◆'],['v5','Mestre da Âmbar','Âmbar minerada',()=>ST.dm,5,'+3% de resistência a dano',()=>VB.arm+=.03,72,40,'v4','❖'],['v6','Domador do Arconte','Derrotar o Arconte',()=>ST.boss,1,'+3% de velocidade',()=>VB.spd+=.03,72,63,'v5','♛']]];
 // Extend the original three-tab node tree, preserving existing achievement IDs.
 const progressData=()=>BD['journey:stats']||(BD['journey:stats']={});
 const value=k=>()=>Math.floor(progressData()[k]||0);
@@ -1199,7 +1303,7 @@ BR[1]=[['Alturas',14],['Combate',38],['Vivência',62],['Jornada',86]];
 BR[2]=[['Exploração',14],['Âmbar',38],['Combate',62],['Abrigo',86]];
 const columns=[[['o1','o2','o3','o4'],['o5','o6','o7'],['build1','build2','build3'],['walk1','walk2','swim1','swim2']],[['a1','a2'],['a3','a4'],['sky1','sky2'],['sky3','sky4']],[['v1','v2','v3'],['v4','v5','v6'],['mang1','mang2','mang3','mang4'],['mang5','mang6']]];
 columns.forEach((cols,t)=>cols.forEach((ids,c)=>ids.forEach((id,row)=>{const n=N[t].find(n=>n[0]===id);n[7]=14+c*24;n[8]=20+row*22})));
-for(const n of N[2]){n[1]=n[1].replace('Explorador da Coroa','Explorador do Mangue').replace('Viajante da Coroa','Viajante do Mangue').replace('Mestre da Âmbar','Mestre do Âmbar').replace('Domador do Hidra','Vencedor da Hidra');n[2]=n[2].replace('Ativar o Âncora','Ativar a Âncora').replace('Segundos na Coroa','Segundos no mangue').replace('Derrotar o Hidra','Derrotar a Hidra')}
+for(const n of N[2]){n[1]=n[1].replace('Explorador da Coroa','Explorador do Mangue').replace('Viajante da Coroa','Viajante do Mangue').replace('Mestre da Âmbar','Mestre do Âmbar').replace('Domador do Arconte','Vencedor do Arconte');n[2]=n[2].replace('Ativar o Âncora','Ativar a Âncora').replace('Segundos na Coroa','Segundos no mangue').replace('Derrotar o Arconte','Derrotar o Arconte')}
 const progressBlock=setB;setB=function(x,y,z,id){const old=gb(x,y,z);progressBlock(x,y,z,id);if(id&&old!==id&&gb(x,y,z)===id){const d=progressData();d.placed=(d.placed||0)+1;const k=DIM===1?'skyBuild':DIM===2?'realmBuild':null;if(k)d[k]=(d[k]||0)+1}};
 const progressKill=kill;kill=function(m){const present=MB.includes(m),before=ST.kills;progressKill(m);if(present&&!MB.includes(m)&&m.t!=='hydra_head'){if(ST.kills===before)ST.kills++;const d=progressData();if(DIM===2){d.realmKills=(d.realmKills||0)+1;const k=m.t==='lumen_wisp'?'wisps':m.t==='shell_guard'?'guards':null;if(k)d[k]=(d[k]||0)+1}}};
 let journeyPosition=null,journeyWorld=null,journeyRefresh=0;
@@ -1251,7 +1355,7 @@ $('ig').addEventListener('click',e=>{const q=e.target.closest('.s');if(!q)return
 function hotN(){const s=inv[sel],k=sel+'|'+(s?s.id:0);if(k==hnK)return;hnK=k;if(!s){hn.style.opacity=0;return}let n=nm(s.id);if(n.length>15)n=n.slice(0,13)+'…';hn.textContent=n;hn.style.opacity=.9;clearTimeout(hnT);hnT=setTimeout(()=>hn.style.opacity=0,2000)}
 
 window.VX={ST:stats,part};
- const help=$('hp').querySelector('p');if(help)help.innerHTML+='<br><br><b>Manguezal de Âmbar:</b> crie uma Âncora do Mangue e uma Chave de Resina. Coloque a âncora e use nela com a chave na mão. Na dimensão final, ataque as gargantas abertas após os cuspes para derrotar as três cabeças da Hidra. A âncora de entrada permite voltar.';
+ const help=$('hp').querySelector('p');if(help)help.innerHTML+='<br><br><b>Manguezal de Âmbar:</b> crie uma Âncora do Mangue e uma Chave de Resina. Coloque a âncora e use nela com a chave na mão. Na dimensão final, enfrente o Arconte alado. Desvie das ondas e círculos de energia; ataque durante a preparação dos golpes. A vitória cria um baú no centro da arena. A âncora de entrada permite voltar.';
  return {generateTask,floorAt,spawn:spawnFinal,enter,leave,defs,remaining,paint,biomeAt,get edits(){return edits}};
 })();
 
@@ -2163,7 +2267,7 @@ const EXC=new Set([0,9,24,35,72,81,83,85]);let LST=null;
 function list(){if(LST)return LST;const T=itemTbl(),o=[];for(const k in T){const id=+k;if(!(id>0)||EXC.has(id))continue;if(id<100?!BT[id]:!IE[id])continue;o.push(id)}return LST=o.sort((a,b)=>a-b)}
 const cat=id=>id<100?'b':(DM[id]||PS[id]||EQT(id)>=0||[129,136,143].includes(id))?'e':'i';
 const TABS=[['all','Tudo'],['b','Blocos'],['i','Itens'],['e','Equip.'],['m','Mobs'],['u','Ferramentas']];
-const MOBS=[['🕷 Aranha das Cavernas','/spawn cave_spider'],['👻 Fantasma das Cavernas','/spawn cave_ghost'],['👺 Goblin das Cavernas','/spawn cave_goblin'],['🧙 Bruxa','/spawn witch'],['◼ Espreitador Sombrio','/spawn shadow_stalker'],['🗿 Golem Guardião','/spawn structure_golem'],['🧟 Zumbi','/spawn zumbi'],['🐄 Vaca','/spawn vaca'],['🐖 Porco','/spawn porco'],['🧑 Aldeão','/spawn aldeao'],['🐦 Pássaro','/spawn passaro'],['🌀 Zéfiro','/spawn zefiro'],['🐋 Baleia','/spawn baleia'],['🦋 Mariposa','/spawn mariposa'],['💎 Sentinela','/spawn sentinela'],['🐇 Coelho','/spawn coelho'],['🪼 Água-viva','/spawn aguaviva'],['🐟 Raia','/spawn raia'],['🐑 Carneiro','/spawn carneiro'],['🗿 Górgula','/spawn gargula'],['⛈ Tempestade','/spawn tempestade'],['😇 Anjo','/spawn anjo'],['👑 Guardião','/spawn guardiao'],['♛ Hidra do Manguezal','/finalboss']];
+const MOBS=[['🕷 Aranha das Cavernas','/spawn cave_spider'],['👻 Fantasma das Cavernas','/spawn cave_ghost'],['👺 Goblin das Cavernas','/spawn cave_goblin'],['🧙 Bruxa','/spawn witch'],['◼ Espreitador Sombrio','/spawn shadow_stalker'],['🗿 Golem Guardião','/spawn structure_golem'],['🧟 Zumbi','/spawn zumbi'],['🐄 Vaca','/spawn vaca'],['🐖 Porco','/spawn porco'],['🧑 Aldeão','/spawn aldeao'],['🐦 Pássaro','/spawn passaro'],['🌀 Zéfiro','/spawn zefiro'],['🐋 Baleia','/spawn baleia'],['🦋 Mariposa','/spawn mariposa'],['💎 Sentinela','/spawn sentinela'],['🐇 Coelho','/spawn coelho'],['🪼 Água-viva','/spawn aguaviva'],['🐟 Raia','/spawn raia'],['🐑 Carneiro','/spawn carneiro'],['🗿 Górgula','/spawn gargula'],['⛈ Tempestade','/spawn tempestade'],['😇 Anjo','/spawn anjo'],['👑 Guardião','/spawn guardiao'],['♛ Arconte do Manguezal','/finalboss']];
 const ACT=[['✈ Alternar voo',()=>{CFL=!CFL;return 'Voo '+(CFL?'ligado':'desligado')+' (toque duplo no espaço)'}],['☀ Dia','/time day'],['🌙 Noite','/time night'],['❤ Curar','/heal'],['🎒 Kit de teste','/kit'],['✨ +10 níveis','/xp 10L'],['🗑 Limpar inventário','/clear'],['💀 Remover mobs','/killmobs'],['🌍 Mundo normal','/overworld',1],['☁ Dimensão do Céu','/sky',1],['♛ Manguezal de Âmbar','/final',1]];
 let open=0,was=1,tab='all';
 function render(){
